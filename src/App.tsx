@@ -1,18 +1,32 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useBuilder } from '@/hooks/useBuilder';
-import { BuilderLayout } from '@/components/builder/BuilderLayout';
-import { WelcomeStep } from '@/components/builder/steps/WelcomeStep';
-import { InfoStep } from '@/components/builder/steps/InfoStep';
-import { BrandingStep } from '@/components/builder/steps/BrandingStep';
-import { HeroStep } from '@/components/builder/steps/HeroStep';
-import { PortfolioStep } from '@/components/builder/steps/PortfolioStep';
-import { ServicesStep } from '@/components/builder/steps/ServicesStep';
-import { PricingStep } from '@/components/builder/steps/PricingStep';
-import { TestimonialsStep } from '@/components/builder/steps/TestimonialsStep';
-import { ContactStep } from '@/components/builder/steps/ContactStep';
-import { PreviewStep } from '@/components/builder/steps/PreviewStep';
-import { PublicSiteView } from '@/components/public/PublicSiteView';
 
+// ============================================
+// BUILDER IMPORTS
+// ============================================
+import { BuilderLayout } from '@/builder/BuilderLayout';
+import { WelcomeStep } from '@/builder/steps/WelcomeStep';
+import { InfoStep } from '@/builder/steps/InfoStep';
+import { BrandingStep } from '@/builder/steps/BrandingStep';
+import { HeroStep } from '@/builder/steps/HeroStep';
+import { PortfolioStep } from '@/builder/steps/PortfolioStep';
+import { ServicesStep } from '@/builder/steps/ServicesStep';
+import { PricingStep } from '@/builder/steps/PricingStep';
+import { TestimonialsStep } from '@/builder/steps/TestimonialsStep';
+import { ContactStep } from '@/builder/steps/ContactStep';
+import { PreviewStep } from '@/builder/steps/PreviewStep';
+
+// ============================================
+// TEMPLATE IMPORTS  
+// ============================================
+import TemplateLayout from '@/template/components/Layout/Layout';
+import TemplateHome from '@/template/pages/Home';
+import TemplatePortfolio from '@/template/pages/Portfolio';
+import TemplateShop from '@/template/pages/Shop';
+import TemplateContact from '@/template/pages/Contact';
+import TemplateAbout from '@/template/pages/About';
+
+// Composant Builder App (comme avant)
 function BuilderApp() {
   const {
     config,
@@ -153,16 +167,58 @@ function BuilderApp() {
   );
 }
 
+// App principal avec les deux namespaces
 function App() {
   return (
-    <Router>
+    <BrowserRouter>
       <Routes>
-        <Route path="/" element={<BuilderApp />} />
-        <Route path="/sites/:slug" element={<PublicSiteView />} />
+        {/* =========================================
+            ROUTES BUILDER (Configuration Admin)
+            ==========================================
+            
+            Wizard de configuration en 10 étapes
+        */}
+        <Route path="/builder" element={<BuilderApp />} />
+
+        {/* =========================================
+            ROUTES TEMPLATE (Sites Publics)
+            =========================================
+            
+            :slug = identifiant unique du photographe
+            Exemples:
+            - /jean-dupont → Home de Jean Dupont
+            - /marie-photo/portfolio → Portfolio de Marie
+        */}
+        <Route path="/:slug" element={<TemplateLayout />}>
+          <Route index element={<TemplateHome />} />
+          <Route path="portfolio" element={<TemplatePortfolio />} />
+          <Route path="shop" element={<TemplateShop />} />
+          <Route path="contact" element={<TemplateContact />} />
+          <Route path="about" element={<TemplateAbout />} />
+        </Route>
+
+        {/* Redirection par défaut */}
+        <Route path="/" element={<Navigate to="/builder" replace />} />
+
+        {/* 404 */}
+        <Route
+          path="*"
+          element={
+            <div style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              height: '100vh',
+              flexDirection: 'column'
+            }}>
+              <h1 style={{ fontSize: '2rem', marginBottom: '1rem' }}>404</h1>
+              <p>Page non trouvée</p>
+            </div>
+          }
+        />
       </Routes>
-    </Router>
+    </BrowserRouter>
   );
 }
 
 export default App;
-

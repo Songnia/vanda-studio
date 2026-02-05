@@ -83,7 +83,7 @@ export const siteConfigService = {
      * Get a published site by slug (public, no authentication required)
      */
     async getPublicSite(slug: string): Promise<PublicSiteResponse> {
-        const response = await api.get<PublicSiteResponse>(`/sites/${slug}`);
+        const response = await api.get<PublicSiteResponse>(`/sites/${slug}/config`);
         return response.data;
     }
 };
