@@ -27,6 +27,7 @@
     },
     "navbar": {
         "home": "Accueil",
+        "portfolio": "Portfolio",
         "shop": "Boutique",
         "blog": "Blog",
         "about": "À Propos",

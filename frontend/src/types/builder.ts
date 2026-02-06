@@ -54,6 +54,11 @@ export interface SiteConfig {
   city: string;
   country: string;
 
+  // À propos du promoteur
+  promoterBiography: string;
+  promoterPhilosophy: string;
+  promoterPhoto?: string;
+
   // Réseaux sociaux
   socials: {
     instagram?: string;
@@ -115,6 +120,10 @@ export const defaultSiteConfig: SiteConfig = {
   address: "123 Rue de la Photo",
   city: "Paris",
   country: "France",
+
+  promoterBiography: "",
+  promoterPhilosophy: "",
+  promoterPhoto: "",
 
   socials: {
     instagram: "",

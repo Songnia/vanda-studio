@@ -22,6 +22,7 @@ import { useParams } from 'react-router-dom';
 import Masonry, { ResponsiveMasonry } from 'react-responsive-masonry';
 import { galleryService } from '../../services/galleryService';
 import Navbar from '../../components/Layout/Navbar';
+import Footer from '../../components/Layout/Footer';
 import { SiteConfigProvider } from '@/context/SiteConfigContext';
 import type { Gallery } from '../../types/gallery';
 
@@ -194,7 +195,11 @@ const ClientGalleryView: React.FC = () => {
                     }}
                 >
                     <Toolbar sx={{ justifyContent: 'space-between' }}>
-                        <Box>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                            <Typography variant="subtitle2" sx={{ fontWeight: 'bold', letterSpacing: 1, color: 'primary.main' }}>
+                                MA GALERIE
+                            </Typography>
+                            <Box sx={{ width: '1px', height: '20px', bgcolor: 'divider' }} />
                             <Typography variant="body2" color="text.secondary">
                                 {gallery.images.length} photos
                             </Typography>
@@ -335,6 +340,7 @@ const ClientGalleryView: React.FC = () => {
                         {snackbarMessage}
                     </Alert>
                 </Snackbar>
+                <Footer />
             </Box>
         </SiteConfigProvider>
     );

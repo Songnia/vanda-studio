@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { AppBar, Toolbar, IconButton, Box, Button, Drawer, List, ListItem, ListItemButton, ListItemText, useTheme, useMediaQuery, Badge, Menu, MenuItem } from '@mui/material';
+import { AppBar, Toolbar, IconButton, Box, Button, Drawer, List, ListItem, ListItemButton, ListItemText, useTheme, useMediaQuery, Menu, MenuItem } from '@mui/material'; // Badge removed
 import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
-import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
+// import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
 import LanguageIcon from '@mui/icons-material/Language';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useCart } from '@/template/context/CartContext';
+// import { useCart } from '@/template/context/CartContext';
 // import { authService } from '../../services/authService'; // Removed for public template
 import { useSiteConfig } from '@/context/SiteConfigContext';
 import logo from '@/template/assets/logo/logo2.svg';
@@ -25,9 +25,9 @@ const Navbar: React.FC = () => {
     if (!config) return null;
 
     // Fallback for cart if context is missing or failing (though it should work)
-    const cartContext = useCart();
-    const cartCount = cartContext ? cartContext.cartCount : 0;
-    const openCart = cartContext ? cartContext.openCart : () => { };
+    // const cartContext = useCart();
+    // const cartCount = cartContext ? cartContext.cartCount : 0;
+    // const openCart = cartContext ? cartContext.openCart : () => { };
 
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
@@ -61,8 +61,8 @@ const Navbar: React.FC = () => {
 
     const navItems = [
         { label: t('navbar.home'), path: '/' },
-        { label: t('navbar.shop'), path: '/shop' },
         { label: t('navbar.portfolio'), path: '/portfolio' },
+        { label: t('navbar.about'), path: '/about' },
         { label: t('navbar.contact'), path: '/contact' },
     ];
 
@@ -183,11 +183,13 @@ const Navbar: React.FC = () => {
                     <IconButton color="inherit">
                         <SearchIcon />
                     </IconButton>
+                    {/* 
                     <IconButton color="inherit" onClick={openCart}>
                         <Badge badgeContent={cartCount} color="primary">
                             <ShoppingBagIcon />
                         </Badge>
                     </IconButton>
+*/}
 
                 </Box>
             </Toolbar>

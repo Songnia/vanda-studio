@@ -46,7 +46,7 @@ const Footer: React.FC = () => {
                             Quick Links
                         </Typography>
                         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                            {['Home', 'Portfolio', 'Shop', 'Blog', 'Contact'].map((item) => (
+                            {['Home', 'Portfolio', 'About', 'Contact'].map((item) => (
                                 <Link
                                     key={item}
                                     component={RouterLink}

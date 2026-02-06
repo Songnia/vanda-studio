@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { AppBar, Toolbar, IconButton, Box, Button, Drawer, List, ListItem, ListItemButton, ListItemText, useTheme, useMediaQuery, Badge } from '@mui/material';
+import { AppBar, Toolbar, IconButton, Box, Button, Drawer, List, ListItem, ListItemButton, ListItemText, useTheme, useMediaQuery } from '@mui/material'; // Badge removed
 import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
-import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
+// import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
 import { Link as RouterLink, useNavigate, useLocation } from 'react-router-dom';
-import { useCart } from '@/template/context/CartContext';
+// import { useCart } from '@/template/context/CartContext';
 import { authService } from '../../services/authService';
 import { useSiteConfig } from '@/context/SiteConfigContext';
 import defaultLogo from '@/template/assets/logo/logo2.svg';
@@ -16,7 +16,7 @@ const Navbar: React.FC<{ basePath?: string }> = ({ basePath }) => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
     const [mobileOpen, setMobileOpen] = useState(false);
-    const { cartCount, openCart } = useCart();
+    // const { cartCount, openCart } = useCart();
 
     const isAdminPage = location.pathname.startsWith('/admin') ||
         location.pathname === '/login' ||
@@ -33,8 +33,8 @@ const Navbar: React.FC<{ basePath?: string }> = ({ basePath }) => {
 
     const navItems = [
         { label: 'Home', path: basePath ? `/${basePath}` : '/' },
-        { label: 'Shop', path: basePath ? `/${basePath}/shop` : '/shop' },
-        { label: 'Blog', path: basePath ? `/${basePath}/blog` : '/blog' },
+        // { label: 'Shop', path: basePath ? `/${basePath}/shop` : '/shop' },
+        // { label: 'Blog', path: basePath ? `/${basePath}/blog` : '/blog' },
         { label: 'About', path: basePath ? `/${basePath}/about` : '/about' },
         { label: 'Contact', path: basePath ? `/${basePath}/contact` : '/contact' },
     ];
@@ -161,11 +161,11 @@ const Navbar: React.FC<{ basePath?: string }> = ({ basePath }) => {
                     <IconButton color="inherit">
                         <SearchIcon />
                     </IconButton>
-                    <IconButton color="inherit" onClick={openCart}>
+                    {/* <IconButton color="inherit" onClick={openCart}>
                         <Badge badgeContent={cartCount} color="primary">
                             <ShoppingBagIcon />
                         </Badge>
-                    </IconButton>
+                    </IconButton> */}
 
                     {isAdminPage && !isMobile && (
                         <Box sx={{ ml: 2, display: 'flex', gap: 1 }}>

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Building2, Mail, Phone, MapPin, Image as ImageIcon } from 'lucide-react';
+import { Building2, Mail, Phone, MapPin, Image as ImageIcon, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
@@ -26,7 +26,10 @@ export function InfoStep({ config, onUpdate, onNext, onPrev }: InfoStepProps) {
     phone: config.phone,
     address: config.address,
     city: config.city,
-    country: config.country
+    country: config.country,
+    promoterBiography: config.promoterBiography || '',
+    promoterPhilosophy: config.promoterPhilosophy || '',
+    promoterPhoto: config.promoterPhoto || ''
   });
 
   const handleChange = (field: string, value: string | boolean) => {
@@ -219,6 +222,88 @@ export function InfoStep({ config, onUpdate, onNext, onPrev }: InfoStepProps) {
                 placeholder="France"
               />
             </div>
+          </div>
+        </div>
+      </Card>
+
+      {/* Section À propos du promoteur */}
+      <Card className="p-6">
+        <div className="space-y-6">
+          <div className="flex items-center gap-2 mb-4">
+            <User className="w-5 h-5 text-yellow-500" />
+            <h3 className="text-lg font-semibold">À propos du promoteur</h3>
+          </div>
+
+          {/* Photo du promoteur */}
+          <div className="space-y-4">
+            <Label htmlFor="promoterPhoto" className="flex items-center gap-2">
+              <ImageIcon className="w-4 h-4" />
+              Photo du promoteur
+            </Label>
+            <div className="flex items-start gap-4">
+              <div className="flex-1">
+                <Input
+                  id="promoterPhoto"
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      const reader = new FileReader();
+                      reader.onloadend = () => {
+                        handleChange('promoterPhoto', reader.result as string);
+                      };
+                      reader.readAsDataURL(file);
+                    }
+                  }}
+                  className="cursor-pointer"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Recommandé: Image carrée, minimum 400x400px
+                </p>
+              </div>
+              {formData.promoterPhoto && (
+                <div className="w-24 h-24 border-2 border-gray-200 rounded-lg overflow-hidden flex-shrink-0">
+                  <img
+                    src={formData.promoterPhoto}
+                    alt="Aperçu promoteur"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Biographie */}
+          <div className="space-y-2">
+            <Label htmlFor="biography">Biographie</Label>
+            <Textarea
+              id="biography"
+              value={formData.promoterBiography}
+              onChange={(e) => handleChange('promoterBiography', e.target.value)}
+              placeholder="Parlez de votre parcours, votre expérience, votre passion pour la photographie..."
+              rows={5}
+              className="resize-none"
+            />
+            <p className="text-xs text-gray-500">
+              Décrivez votre parcours professionnel et ce qui vous anime
+            </p>
+          </div>
+
+          {/* Philosophie */}
+          <div className="space-y-2">
+            <Label htmlFor="philosophy">Ma Philosophie</Label>
+            <Textarea
+              id="philosophy"
+              value={formData.promoterPhilosophy}
+              onChange={(e) => handleChange('promoterPhilosophy', e.target.value)}
+              placeholder="Quelle est votre vision de la photographie ? Votre approche unique ?"
+              rows={5}
+              className="resize-none"
+            />
+            <p className="text-xs text-gray-500">
+              Partagez votre vision artistique et votre approche de la photographie
+            </p>
           </div>
         </div>
       </Card>

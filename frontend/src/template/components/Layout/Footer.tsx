@@ -22,8 +22,7 @@ const Footer: React.FC = () => {
     const quickLinks = [
         { label: t('navbar.home'), path: '/' },
         { label: t('navbar.portfolio'), path: '/portfolio' },
-        { label: t('navbar.shop'), path: '/shop' },
-        { label: t('navbar.blog'), path: '/blog' },
+        { label: t('navbar.about'), path: '/about' },
         { label: t('navbar.contact'), path: '/contact' },
     ];
 

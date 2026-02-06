@@ -159,7 +159,7 @@ export function ContactStep({ config, onUpdate, onNext, onPrev }: ContactStepPro
         </Card>
       </div>
 
-      {/* Options d'affichage */}
+      {/* Options d'affichage *
       <Card className="p-6">
         <h3 className="font-semibold mb-4">Options de la page contact</h3>
         <div className="space-y-4">
@@ -179,7 +179,7 @@ export function ContactStep({ config, onUpdate, onNext, onPrev }: ContactStepPro
             <Switch checked={showMap} onCheckedChange={setShowMap} />
           </div>
         </div>
-      </Card>
+      </Card>/}
 
       {/* Aperçu */}
       <Card className="p-6">

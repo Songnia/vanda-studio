@@ -27,6 +27,7 @@
     },
     "navbar": {
         "home": "Home",
+        "portfolio": "Portfolio",
         "shop": "Shop",
         "blog": "Blog",
         "about": "About",
