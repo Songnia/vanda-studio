@@ -27,9 +27,13 @@ const WhatsAppFAB: React.FC = () => {
                     onClick={handleClick}
                     sx={{
                         fontWeight: 'bold',
+                        backgroundColor: 'primary.main',
+                        color:'secondary.main',
                         px: 3,
                         '&:hover': {
                             filter: 'brightness(0.95)',
+                            backgroundColor:'secondary.main',
+                            color:'primary.main'
                         },
                     }}
                 >

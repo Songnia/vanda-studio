@@ -11,7 +11,12 @@ import { useTranslation } from 'react-i18next';
 import { useSiteConfig } from '@/context/SiteConfigContext';
 import logo from '@/template/assets/logo/logo2.svg';
 
-const Navbar: React.FC = () => {
+
+interface NavbarProps {
+    basePath?: string;
+}
+
+const Navbar: React.FC<NavbarProps> = ({ basePath }) => {
     const { t, i18n } = useTranslation();
     const { config } = useSiteConfig();
     // const navigate = useNavigate();
@@ -48,7 +53,7 @@ const Navbar: React.FC = () => {
 
     // Use slug-based navigation
     const params = location.pathname.split('/');
-    const slug = params[1] || config.siteName.toLowerCase().replace(/\s+/g, '-');
+    const slug = basePath || params[1] || config.siteName.toLowerCase().replace(/\s+/g, '-');
     // Note: In the real app, we might want to get the slug from useSiteConfig or context, 
     // but SiteConfig doesn't always have the slug explicitly unless we added it.
     // Enhanced SiteConfigContext gets it from URL parameters.
@@ -84,6 +89,7 @@ const Navbar: React.FC = () => {
                     </Box>
                 ) : (
                     <img src={config.logo || logo} alt={`${config.siteName} Logo`} style={{ height: '40px', objectFit: 'contain' }} />
+
                 )}
             </Box>
             <List>

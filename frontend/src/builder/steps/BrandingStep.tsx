@@ -109,12 +109,12 @@ export function BrandingStep({ config, onUpdate, onNext, onPrev }: BrandingStepP
               className="flex flex-col items-center gap-2 p-3 rounded-lg border hover:border-yellow-500 transition-colors"
             >
               <div className="flex gap-1">
-                <div 
-                  className="w-4 h-4 rounded-full" 
+                <div
+                  className="w-4 h-4 rounded-full"
                   style={{ backgroundColor: preset.primary }}
                 />
-                <div 
-                  className="w-4 h-4 rounded-full" 
+                <div
+                  className="w-4 h-4 rounded-full"
                   style={{ backgroundColor: preset.accent }}
                 />
               </div>
@@ -220,17 +220,17 @@ export function BrandingStep({ config, onUpdate, onNext, onPrev }: BrandingStepP
           {/* Aperçu */}
           <div className="mt-6 p-4 rounded-lg border">
             <Label className="mb-3 block">Aperçu</Label>
-            <div 
+            <div
               className="p-6 rounded-lg"
               style={{ backgroundColor: colors.backgroundColor }}
             >
-              <h4 
+              <h4
                 className="text-xl font-bold mb-2"
                 style={{ color: colors.primaryColor }}
               >
                 Titre exemple
               </h4>
-              <p 
+              <p
                 className="mb-4"
                 style={{ color: colors.textColor }}
               >
@@ -238,7 +238,7 @@ export function BrandingStep({ config, onUpdate, onNext, onPrev }: BrandingStepP
               </p>
               <button
                 className="px-4 py-2 rounded-lg font-medium"
-                style={{ 
+                style={{
                   backgroundColor: colors.accentColor,
                   color: colors.primaryColor
                 }}
@@ -254,7 +254,7 @@ export function BrandingStep({ config, onUpdate, onNext, onPrev }: BrandingStepP
         <Button variant="outline" onClick={onPrev}>
           Retour
         </Button>
-        <Button 
+        <Button
           onClick={handleSubmit}
           className="bg-yellow-500 hover:bg-yellow-600 text-black"
         >

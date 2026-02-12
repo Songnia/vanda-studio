@@ -7,7 +7,7 @@ import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import PhoneIcon from '@mui/icons-material/Phone';
 import EmailIcon from '@mui/icons-material/Email';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useSiteConfig } from '@/context/SiteConfigContext';
 
@@ -16,14 +16,25 @@ import logo from '@/template/assets/logo/logo2.svg';
 const Footer: React.FC = () => {
     const { t } = useTranslation();
     const { config } = useSiteConfig();
+    const location = useLocation();
 
     if (!config) return null;
 
+    // Get slug from current URL path
+    const params = location.pathname.split('/');
+    const slug = params[1] || config.siteName.toLowerCase().replace(/\s+/g, '-');
+
+    // Construct paths relative to the current site slug
+    const getPath = (path: string) => {
+        if (path === '/') return `/${slug}`;
+        return `/${slug}${path}`;
+    };
+
     const quickLinks = [
-        { label: t('navbar.home'), path: '/' },
-        { label: t('navbar.portfolio'), path: '/portfolio' },
-        { label: t('navbar.about'), path: '/about' },
-        { label: t('navbar.contact'), path: '/contact' },
+        { label: t('navbar.home'), path: getPath('/') },
+        { label: t('navbar.portfolio'), path: getPath('/portfolio') },
+        { label: t('navbar.about'), path: getPath('/about') },
+        { label: t('navbar.contact'), path: getPath('/contact') },
     ];
 
     return (
@@ -50,19 +61,19 @@ const Footer: React.FC = () => {
                             )}
                         </Box>
                         <Typography variant="body2" sx={{ color: 'grey.400', mb: 3, lineHeight: 1.8, maxWidth: '300px' }}>
-                            {t('footer.description')}
+                            {t('footer.description', { siteName: config.siteName })}
                         </Typography>
                         <Box sx={{ display: 'flex', gap: 1 }}>
-                            <IconButton size="small" sx={{ color: 'white', '&:hover': { color: 'primary.main' } }}>
+                            <IconButton size="small" sx={{ color: 'white' }}>
                                 <FacebookIcon />
                             </IconButton>
-                            <IconButton size="small" sx={{ color: 'white', '&:hover': { color: 'primary.main' } }}>
+                            <IconButton size="small" sx={{ color: 'white' }}>
                                 <InstagramIcon />
                             </IconButton>
-                            <IconButton size="small" sx={{ color: 'white', '&:hover': { color: 'primary.main' } }}>
+                            <IconButton size="small" sx={{ color: 'white' }}>
                                 <TwitterIcon />
                             </IconButton>
-                            <IconButton size="small" sx={{ color: 'white', '&:hover': { color: 'primary.main' } }}>
+                            <IconButton size="small" sx={{ color: 'white' }}>
                                 <LinkedInIcon />
                             </IconButton>
                         </Box>
@@ -80,10 +91,10 @@ const Footer: React.FC = () => {
                                     component={RouterLink}
                                     to={item.path}
                                     sx={{
-                                        color: 'grey.400',
+                                        color: 'secondary.main',
                                         textDecoration: 'none',
                                         transition: 'color 0.2s',
-                                        '&:hover': { color: 'primary.main', pl: 1 },
+                                        '&:hover': { pl: 1 },
                                         display: 'inline-block',
                                     }}
                                 >
@@ -100,19 +111,19 @@ const Footer: React.FC = () => {
                         </Typography>
                         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                             <Box sx={{ display: 'flex', gap: 2 }}>
-                                <LocationOnIcon sx={{ color: 'primary.main' }} />
+                                <LocationOnIcon sx={{ color: 'secondary.main' }} />
                                 <Typography variant="body2" sx={{ color: 'grey.400' }}>
                                     Douala, Cameroun
                                 </Typography>
                             </Box>
                             <Box sx={{ display: 'flex', gap: 2 }}>
-                                <PhoneIcon sx={{ color: 'primary.main' }} />
+                                <PhoneIcon sx={{ color: 'secondary.main' }} />
                                 <Typography variant="body2" sx={{ color: 'grey.400' }}>
                                     {config.phone || '+237 698 399 985'}
                                 </Typography>
                             </Box>
                             <Box sx={{ display: 'flex', gap: 2 }}>
-                                <EmailIcon sx={{ color: 'primary.main' }} />
+                                <EmailIcon sx={{ color: 'secondary.main' }} />
                                 <Typography variant="body2" sx={{ color: 'grey.400' }}>
                                     {config.email || 'contact@example.com'}
                                 </Typography>

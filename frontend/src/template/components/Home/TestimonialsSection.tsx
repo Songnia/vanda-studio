@@ -98,7 +98,7 @@ const TestimonialsSection: React.FC = () => {
 
                             <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
                                 {[...Array(testimonial.rating)].map((_, i) => (
-                                    <Typography key={i} component="span" sx={{ color: '#FFD700' }}>★</Typography>
+                                    <Typography key={i} component="span" sx={{ color: 'primary.main' }}>★</Typography>
                                 ))}
                             </Box>
 

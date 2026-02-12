@@ -1,4 +1,4 @@
-import { createTheme, type Theme } from '@mui/material/styles';
+import { createTheme, type Theme, alpha } from '@mui/material/styles';
 import type { SiteConfig } from '@/types/builder';
 
 /**
@@ -10,6 +10,7 @@ const defaultTheme = createTheme({
     primary: {
       main: '#f2f20d',
       contrastText: '#181811',
+      transparent: alpha('#f2f20d', 0.15), // 15% opacity
     },
     background: {
       default: '#f8f8f5',
@@ -24,13 +25,13 @@ const defaultTheme = createTheme({
   typography: {
     fontFamily: '"Inter", "sans-serif"',
     h1: {
-      fontFamily: '"Playfair Display", "serif"',
+      fontFamily: '"Playfair Display"',
     },
     h2: {
-      fontFamily: '"Playfair Display", "serif"',
+      fontFamily: '"Playfair Display"',
     },
     h3: {
-      fontFamily: '"Playfair Display", "serif"',
+      fontFamily: '"Playfair Display"',
     },
     button: {
       textTransform: 'none',
@@ -66,12 +67,15 @@ const defaultTheme = createTheme({
  * Créer un thème MUI dynamique à partir de la configuration du site
  */
 export function createThemeFromConfig(config: SiteConfig): Theme {
+  const primaryColor = config.primaryColor || '#f2f20d';
+
   return createTheme({
     palette: {
       mode: 'light',
       primary: {
-        main: config.primaryColor || '#f2f20d',
+        main: primaryColor,
         contrastText: config.textColor || '#181811',
+        transparent: alpha(primaryColor, 0.15), // 15% opacity
       },
       secondary: {
         main: config.secondaryColor || '#f5f5f5',
@@ -89,13 +93,13 @@ export function createThemeFromConfig(config: SiteConfig): Theme {
     typography: {
       fontFamily: '"Inter", "sans-serif"',
       h1: {
-        fontFamily: '"Playfair Display", "serif"',
+        fontFamily: '"Playfair Display"',
       },
       h2: {
-        fontFamily: '"Playfair Display", "serif"',
+        fontFamily: '"Playfair Display"',
       },
       h3: {
-        fontFamily: '"Playfair Display", "serif"',
+        fontFamily: '"Playfair Display"',
       },
       button: {
         textTransform: 'none',

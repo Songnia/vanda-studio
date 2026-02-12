@@ -171,7 +171,7 @@ const ServicesSection: React.FC = () => {
                                     </Typography>
                                     <Typography
                                         variant="body1"
-                                        color="text.secondary"
+                                        color="text.primary"
                                         sx={{ mb: 3, fontSize: { xs: '0.95rem', md: '1.1rem' } }}
                                     >
                                         {service.description}
@@ -203,8 +203,8 @@ const ServicesSection: React.FC = () => {
                                             display: 'inline-flex',
                                             alignItems: 'center',
                                             gap: 1,
-                                            color: 'text.primary',
-                                            backgroundColor: 'rgba(255, 215, 0, 0.3)', // Transparent yellow
+                                            color: 'text.secondary',
+                                            backgroundColor: 'secondary.main', // Transparent primary
                                             px: 1,
                                             py: 0.5,
                                             fontStyle: 'italic',
@@ -213,7 +213,8 @@ const ServicesSection: React.FC = () => {
                                             cursor: 'pointer',
                                             transition: 'background-color 0.3s',
                                             '&:hover': {
-                                                backgroundColor: 'rgba(255, 215, 0, 0.6)',
+                                                backgroundColor: 'primary.main',
+                                                color:'secondary.main'
                                             }
                                         }}
                                     >

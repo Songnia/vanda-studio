@@ -20,7 +20,7 @@ const SkillsetSection: React.FC = () => {
     ];
 
     return (
-        <Box sx={{ py: { xs: 8, md: 12 }, backgroundColor: '#181811', color: 'white', overflow: 'hidden' }}>
+        <Box sx={{ py: { xs: 8, md: 12 }, backgroundColor: 'primary.main', color: 'text.secondary', overflow: 'hidden' }}>
             <Container maxWidth="lg" sx={{ px: { xs: 2, sm: 3, md: 4 } }}>
                 <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: { xs: 8, md: 8 }, alignItems: 'center' }}>
 
@@ -45,7 +45,7 @@ const SkillsetSection: React.FC = () => {
                                     <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>
                                         {skill.title}
                                     </Typography>
-                                    <Typography variant="body2" sx={{ color: 'grey.400', lineHeight: 1.6 }}>
+                                    <Typography variant="body2" sx={{ color: 'text.secondary', lineHeight: 1.6 }}>
                                         {skill.desc}
                                     </Typography>
                                 </Box>

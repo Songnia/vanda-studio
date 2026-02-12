@@ -31,9 +31,9 @@ const FlashInfo: React.FC = () => {
                 elevation={0}
                 sx={{
                     mb: { xs: 4, md: 6 },
-                    backgroundColor: 'rgba(255, 215, 0, 0.15)', // Slightly stronger yellow background
+                    backgroundColor: 'primary.transparent', // Slightly stronger yellow background
                     border: '1px solid',
-                    borderColor: '#FFD700',
+                    borderColor: 'primary.main',
                     borderRadius: 4,
                     overflow: 'hidden', // To clip the image
                     display: 'flex',
@@ -58,16 +58,16 @@ const FlashInfo: React.FC = () => {
                     <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
                         <Box
                             sx={{
-                                backgroundColor: '#FFD700',
+                                backgroundColor: 'primary.main',
                                 borderRadius: '50%',
                                 p: 1, // Reduced padding
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                boxShadow: '0 4px 10px rgba(255, 215, 0, 0.4)'
+                                boxShadow: '0 4px 10px primary.main'
                             }}
                         >
-                            <BoltIcon sx={{ color: 'black', fontSize: 24 }} /> {/* Slightly smaller icon */}
+                            <BoltIcon sx={{ color: 'secondary.main', fontSize: 24 }} /> {/* Slightly smaller icon */}
                         </Box>
                         <Box>
                             <Typography
@@ -102,17 +102,17 @@ const FlashInfo: React.FC = () => {
                             window.open(`https://wa.me/${phoneNumber}?text=${encodedMessage}`, '_blank');
                         }}
                         sx={{
-                            backgroundColor: '#FFD700', // Yellow background
-                            color: 'black', // Black text
+                            backgroundColor: 'primary.main', // Yellow background
+                            color: 'secondary.main', // Black text
                             px: 3,
                             py: 1,
                             borderRadius: 2, // Slightly rounded
                             fontWeight: 'bold',
-                            boxShadow: '0 4px 14px 0 rgba(0,0,0,0.1)',
+                            boxShadow: '0 4px 14px 0 ,primary.transparent', //transparent primary
                             '&:hover': {
-                                backgroundColor: '#F0C800',
+                                backgroundColor: 'primary.main',
                                 transform: 'translateY(-1px)',
-                                boxShadow: '0 6px 20px rgba(0,0,0,0.15)',
+                                boxShadow: '0 6px 20px primary.main',
                             },
                             transition: 'all 0.3s ease'
                         }}
@@ -157,7 +157,7 @@ const FlashInfo: React.FC = () => {
                             left: 0,
                             right: 0,
                             bottom: 0,
-                            background: 'linear-gradient(to right, rgba(255,215,0,0.1), transparent)',
+                            background: 'linear-gradient(to right, primary , transparent)',
                             pointerEvents: 'none'
                         }}
                     />
@@ -171,7 +171,7 @@ const FlashInfo: React.FC = () => {
                 maxWidth="lg"
                 PaperProps={{
                     sx: {
-                        backgroundColor: 'transparent',
+                        backgroundColor: 'primary.transparent',
                         boxShadow: 'none',
                         overflow: 'hidden',
                         m: 1,

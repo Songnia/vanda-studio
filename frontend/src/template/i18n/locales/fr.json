@@ -38,7 +38,7 @@
         "signup": "S'inscrire"
     },
     "footer": {
-        "description": "ULTIMA STUDIOS est un studio professionnel de photographie et de vidéographie situé à Douala, Cameroun.",
+        "description": "{{siteName}} est un studio professionnel de photographie et de vidéographie situé à Douala, Cameroun.",
         "quickLinks": "Liens Rapides",
         "contactUs": "Contactez-nous",
         "rights": "Tous droits réservés.",
@@ -49,7 +49,7 @@
         "title": "À PROPOS",
         "founder": "Le Promoteur",
         "biography": "Biographie",
-        "bio1": "Passionné par l'image depuis plus de 10 ans, j'ai fondé Ultimata Studios avec une vision simple : capturer l'authenticité. Mon parcours m'a mené de la photographie de rue aux studios de mode, forgeant un style unique qui mêle spontanéité et maîtrise technique.",
+        "bio1": "Passionné par l'image depuis plus de 10 ans, j'ai fondé Mon Studios avec une vision simple : capturer l'authenticité. Mon parcours m'a mené de la photographie de rue aux studios de mode, forgeant un style unique qui mêle spontanéité et maîtrise technique.",
         "bio2": "J'ai eu le privilège de travailler avec des marques prestigieuses et de documenter des centaines d'histoires d'amour et de réussite. Aujourd'hui, je mets cette expérience au service de vos projets.",
         "philosophy": "Ma Philosophie",
         "quote": "\"Chaque image doit raconter une histoire.\"",
@@ -139,7 +139,7 @@
     "auth": {
         "login": {
             "title": "Connexion",
-            "subtitle": "Accédez à votre espace Ultimate Studio",
+            "subtitle": "Accédez à votre espace Mon Studio",
             "email": "Email",
             "password": "Mot de passe",
             "submit": "Se connecter",
@@ -149,7 +149,7 @@
         },
         "signup": {
             "title": "Inscription",
-            "subtitle": "Rejoignez l'aventure Ultimate Studio",
+            "subtitle": "Rejoignez l'aventure Mon Studio",
             "name": "Nom complet",
             "email": "Email",
             "password": "Mot de passe",
@@ -241,8 +241,8 @@
                     ],
                     "button": "Choisir ce forfait"
                 },
-                "ultimate": {
-                    "title": "Forfait Ultimate",
+                "Mon": {
+                    "title": "Forfait Mon",
                     "price": "250.000 FCFA",
                     "description": "L'expérience complète pour les professionnels et les grands événements.",
                     "features": [
@@ -338,7 +338,7 @@
                 "1": {
                     "name": "Sarah & Julien",
                     "role": "Mariage",
-                    "content": "Ultimata Studios a su capturer l'essence même de notre mariage. Les photos sont naturelles, lumineuses et pleines d'émotion. Un grand merci à toute l'équipe pour leur professionnalisme !"
+                    "content": "Mon Studios a su capturer l'essence même de notre mariage. Les photos sont naturelles, lumineuses et pleines d'émotion. Un grand merci à toute l'équipe pour leur professionnalisme !"
                 },
                 "2": {
                     "name": "Marc Dubois",

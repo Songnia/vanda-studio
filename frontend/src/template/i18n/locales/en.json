@@ -38,7 +38,7 @@
         "signup": "Sign Up"
     },
     "footer": {
-        "description": "ULTIMA STUDIOS is a professional photography and videography studio located in Douala, Cameroon.",
+        "description": "{{siteName}} is a professional photography and videography studio located in Douala, Cameroon.",
         "quickLinks": "Quick Links",
         "contactUs": "Contact Us",
         "rights": "All rights reserved.",

@@ -81,7 +81,11 @@ export function PortfolioStep({ config, onAddPhoto, onAddPhotos, onRemovePhoto, 
     });
 
     const results = await Promise.all(uploadPromises);
+
+    // Ajouter au parent sans IDs (le parent les générera)
     onAddPhotos(results);
+
+    // Ajouter à l'état local avec des IDs temporaires pour l'affichage immédiat
     setPhotos(prev => [
       ...prev,
       ...results.map(r => ({
@@ -89,6 +93,9 @@ export function PortfolioStep({ config, onAddPhoto, onAddPhotos, onRemovePhoto, 
         ...r
       }))
     ]);
+
+    // Réinitialiser le formulaire
+    setNewPhoto({ url: '', category: '' });
     setUploadDialogOpen(false);
   };
 

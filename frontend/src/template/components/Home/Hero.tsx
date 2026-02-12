@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Box, Typography, Button, Container, IconButton } from '@mui/material';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useSiteConfig } from '@/context/SiteConfigContext';
 
@@ -13,9 +13,20 @@ import hero3 from '../../assets/hero/hero-3.jpg';
 const Hero: React.FC = () => {
     const { t } = useTranslation();
     const { config } = useSiteConfig();
+    const location = useLocation();
 
     if (!config) return null;
     const [currentSlide, setCurrentSlide] = useState(0);
+
+    // Get slug from current URL path
+    const params = location.pathname.split('/');
+    const slug = params[1] || config.siteName.toLowerCase().replace(/\s+/g, '-');
+
+    // Construct paths relative to the current site slug
+    const getPath = (path: string) => {
+        if (path === '/') return `/${slug}`;
+        return `/${slug}${path}`;
+    };
 
     // Use config.heroImages if available, otherwise fallback to default images
     const defaultImages = [hero1, hero2, hero3];
@@ -100,15 +111,19 @@ const Hero: React.FC = () => {
                         sx={{
                             fontWeight: 900,
                             textTransform: 'uppercase',
-                            color: 'white',
+                            color: 'secondary.main',
                             mb: { xs: 2, md: 3 },
                             fontSize: { xs: '2.5rem', sm: '3.5rem', md: '4.5rem', lg: '5.5rem' },
                             lineHeight: 1.1,
                         }}
                     >
-                        {slides[currentSlide].title} <br />
+                        {/* {slides[currentSlide].title} <br /> */}
+                        <Box component="span" sx={{ color: 'secondary.main', display: 'inline-block' }}>
+                            {slides[currentSlide].highlight.split(' ').slice(0, -1).join(' ')}
+                        </Box>
+                        {' '}
                         <Box component="span" sx={{ color: 'primary.main', display: 'inline-block' }}>
-                            {slides[currentSlide].highlight}
+                            {slides[currentSlide].highlight.split(' ').slice(-1)[0]}
                         </Box>
                     </Typography>
                     <Typography
@@ -116,8 +131,8 @@ const Hero: React.FC = () => {
                         sx={{
                             mb: { xs: 4, md: 6 },
                             maxWidth: '600px',
-                            color: 'grey.300',
-                            fontWeight: 400,
+                            color: 'secondary.main',
+                            fontWeight: 200,
                             fontSize: { xs: '1rem', sm: '1.25rem', md: '1.5rem' },
                             lineHeight: 1.6,
                         }}
@@ -130,7 +145,7 @@ const Hero: React.FC = () => {
                             color="primary"
                             size="large"
                             component={RouterLink}
-                            to="/portfolio"
+                            to={getPath('/portfolio')}
                             endIcon={<ArrowForwardIcon />}
                             sx={{
                                 width: { xs: '100%', sm: 'auto' },
@@ -138,9 +153,14 @@ const Hero: React.FC = () => {
                                 px: 5,
                                 py: 2,
                                 fontSize: '1.1rem',
+                                color: 'secondary.main',
                                 boxShadow: 'none',
-                                '&:hover': { boxShadow: 'none', transform: 'translateY(-2px)' },
-                                transition: 'all 0.3s'
+                                '&:hover': {
+                                    boxShadow: 'none',
+                                    transform: 'translateY(-2px)',
+                                    color: 'secondary.main'
+                                },
+                                transition: 'all 0.3s',
                             }}
                         >
                             {t('hero.buttons.viewPortfolio')}
@@ -160,12 +180,12 @@ const Hero: React.FC = () => {
                                 px: 5,
                                 py: 2,
                                 fontSize: '1.1rem',
-                                color: 'white',
+                                color: 'secondary.main',
                                 borderColor: 'white',
                                 '&:hover': {
                                     borderColor: 'primary.main',
                                     color: 'primary.main',
-                                    backgroundColor: 'rgba(242, 242, 13, 0.1)'
+                                    backgroundColor: 'hinerit'
                                 }
                             }}
                         >
@@ -220,7 +240,7 @@ const Hero: React.FC = () => {
                             onClick={handleNext}
                             sx={{
                                 color: 'white',
-                                border: '1px solid rgba(255,255,255,0.3)',
+                                border: '1px solid primary.main',
                                 '&:hover': { borderColor: 'primary.main', color: 'primary.main' }
                             }}
                         >
@@ -242,7 +262,7 @@ const Hero: React.FC = () => {
                     <Typography
                         variant="caption"
                         sx={{
-                            color: 'rgba(255,255,255,0.7)',
+                            color: 'secondary.main',
                             fontSize: '0.75rem',
                             letterSpacing: 1,
                             lineHeight: 1.6,

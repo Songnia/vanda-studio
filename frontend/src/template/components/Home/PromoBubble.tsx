@@ -55,11 +55,11 @@ const PromoBubble: React.FC = () => {
                         sx={{
                             width: { xs: 56, md: 72 },
                             height: { xs: 56, md: 72 },
-                            backgroundColor: '#FFD700', // Yellow background
-                            color: 'black', // Black icon
-                            boxShadow: '0 4px 20px rgba(0,0,0,0.25)',
+                            backgroundColor: 'primary.main',
+                            color: 'secondary.main',
+                            boxShadow: (theme) => `0 4px 20px ${theme.palette.primary.transparent}`,
                             '&:hover': {
-                                backgroundColor: '#F0C800',
+                                backgroundColor: 'primary.main',
                                 transform: 'scale(1.1)',
                             },
                             transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
@@ -71,19 +71,19 @@ const PromoBubble: React.FC = () => {
 
                 <Box
                     sx={{
-                        backgroundColor: '#FFD700', // Yellow background
+                        backgroundColor: 'primary.main', // Yellow background
                         borderRadius: '20px 20px 20px 4px',
                         py: 1,
                         px: 2,
                         boxShadow: 3,
                         border: '1px solid',
-                        borderColor: 'rgba(0,0,0,0.1)',
+                        borderColor: 'secondary.main',
                         maxWidth: 200,
                         display: { xs: 'none', md: 'block' },
                         animation: 'bounce 2s infinite'
                     }}
                 >
-                    <Typography variant="body2" fontWeight="bold" sx={{ color: 'black' }}>
+                    <Typography variant="body2" fontWeight="bold" sx={{ color: 'secondary.main' }}>
                         {t('home.promoBubble.text')}
                     </Typography>
                     <style>

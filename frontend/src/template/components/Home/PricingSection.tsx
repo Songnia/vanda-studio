@@ -51,7 +51,7 @@ const PricingSection: React.FC = () => {
         : packages;
 
     return (
-        <Box id="pricing-section" sx={{ py: { xs: 8, md: 12 }, backgroundColor: 'background.paper' }}>
+        <Box id="pricing-section" sx={{ py: { xs: 8, md: 12 }, backgroundColor: 'secondary.main' }}>
             <Container maxWidth="lg" sx={{ px: { xs: 2, sm: 3, md: 4 } }}>
                 {/* Header */}
                 <Box sx={{ textAlign: 'center', mb: 8 }}>
@@ -88,7 +88,7 @@ const PricingSection: React.FC = () => {
                             >
                                 {pkg.highlight && (
                                     <Chip
-                                        icon={<StarIcon sx={{ color: 'black !important' }} />}
+                                        icon={<StarIcon sx={{ color: 'secondary.main' }} />}
                                         label={t('home.pricing.recommended')}
                                         color="primary"
                                         sx={{
@@ -97,7 +97,7 @@ const PricingSection: React.FC = () => {
                                             left: '50%',
                                             transform: 'translateX(-50%)',
                                             fontWeight: 'bold',
-                                            color: 'black',
+                                            color: 'secondary.main',
                                         }}
                                     />
                                 )}
@@ -116,7 +116,7 @@ const PricingSection: React.FC = () => {
                                         {pkg.features.map((feature, idx) => (
                                             <ListItem key={idx} disablePadding sx={{ mb: 1.5 }}>
                                                 <ListItemIcon sx={{ minWidth: 36 }}>
-                                                    <CheckCircleIcon sx={{ color: pkg.highlight ? 'primary.main' : 'grey.400' }} />
+                                                    <CheckCircleIcon sx={{ color: pkg.highlight ? 'primary.main' : 'secondary' }} />
                                                 </ListItemIcon>
                                                 <ListItemText primary={feature} primaryTypographyProps={{ variant: 'body2' }} />
                                             </ListItem>
@@ -142,7 +142,8 @@ const PricingSection: React.FC = () => {
                                             py: 1.5,
                                             fontWeight: 'bold',
                                             borderRadius: 2,
-                                            boxShadow: pkg.highlight ? '0 8px 16px rgba(242, 242, 13, 0.3)' : 'none',
+                                            color: pkg.highlight ? 'secondary.main' : 'none',
+                                            boxShadow: pkg.highlight ? '0 8px 16px primary.main' : 'none',
                                         }}
                                     >
                                         {pkg.buttonText}

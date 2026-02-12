@@ -19,7 +19,7 @@ const Footer: React.FC = () => {
                     {/* Brand Column */}
                     <Box sx={{ flex: { xs: '1 1 100%', md: '1 1 30%' } }}>
                         <Box sx={{ mb: 3 }}>
-                            <img src={logo} alt="Ultimata Studios Logo" style={{ height: '40px', filter: 'brightness(0) invert(1)' }} />
+                            <img src={logo} alt="mon Studios Logo" style={{ height: '40px', filter: 'brightness(0) invert(1)' }} />
                         </Box>
                         <Typography variant="body2" sx={{ color: 'grey.400', mb: 3, lineHeight: 1.8, maxWidth: '300px' }}>
                             Capturing life's most precious moments with professional excellence. From studio portraits to grand events, we bring your vision to life.
@@ -87,7 +87,7 @@ const Footer: React.FC = () => {
                             <Box sx={{ display: 'flex', gap: 2 }}>
                                 <EmailIcon sx={{ color: 'primary.main' }} />
                                 <Typography variant="body2" sx={{ color: 'grey.400' }}>
-                                    hello@ultimatestudio.com
+                                    hello@monstudio.com
                                 </Typography>
                             </Box>
                         </Box>
@@ -98,7 +98,7 @@ const Footer: React.FC = () => {
 
                 <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', alignItems: 'center', gap: 2 }}>
                     <Typography variant="body2" sx={{ color: 'grey.500' }}>
-                        © {new Date().getFullYear()} Ultimata Studios. All rights reserved.
+                        © {new Date().getFullYear()} mon Studios. All rights reserved.
                     </Typography>
                     <Box sx={{ display: 'flex', gap: 3 }}>
                         <Link href="#" sx={{ color: 'grey.500', textDecoration: 'none', fontSize: '0.875rem', '&:hover': { color: 'white' } }}>
