@@ -9,7 +9,8 @@ import {
     User,
     HelpCircle,
     Globe,
-    ChevronDown
+    ChevronDown,
+    CreditCard
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -88,7 +89,7 @@ export function AdminNavbar() {
                 <div className="flex items-center gap-2">
                     {/* Placeholder Logo */}
                     <div className="font-bold text-xl tracking-tight flex items-center gap-1">
-                        <span className="text-yellow-400">⚡</span>
+                        <span className="text-green-500">⚡</span>
                         <span>VANDA</span>
                     </div>
                     <span className="bg-gray-100 text-xs px-2 py-0.5 rounded-full text-gray-600 font-medium">
@@ -124,7 +125,7 @@ export function AdminNavbar() {
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <Input
                         placeholder="Trouvez n'importe quoi..."
-                        className="pl-9 bg-gray-100 border-none rounded-full h-10 focus-visible:ring-1 focus-visible:ring-yellow-400"
+                        className="pl-9 bg-gray-100 border-none rounded-full h-10 focus-visible:ring-1 focus-visible:ring-green-400"
                     />
                     <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
                         <span className="flex items-center justify-center min-w-[20px] h-5 bg-white rounded border border-gray-200 text-[10px] text-gray-500 font-medium px-1">
@@ -198,6 +199,13 @@ export function AdminNavbar() {
 
                         <DropdownMenuSeparator />
 
+                        <DropdownMenuItem
+                            className="gap-2 cursor-pointer"
+                            onClick={() => navigate('/pricing')}
+                        >
+                            <CreditCard className="w-4 h-4" />
+                            <span>Mon abonnement</span>
+                        </DropdownMenuItem>
                         <DropdownMenuItem className="gap-2 cursor-pointer">
                             <User className="w-4 h-4" />
                             <span>Mon Profil</span>

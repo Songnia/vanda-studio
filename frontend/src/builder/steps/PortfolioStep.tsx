@@ -6,6 +6,8 @@ import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import type { SiteConfig, Photo } from '@/types/builder';
+import { usePlanLimits } from '@/hooks/usePlanLimits';
+import { UpgradeDialog } from '@/components/common/UpgradeDialog';
 
 interface PortfolioStepProps {
   config: SiteConfig;
@@ -37,6 +39,10 @@ export function PortfolioStep({ config, onAddPhoto, onAddPhotos, onRemovePhoto, 
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
   const [newPhoto, setNewPhoto] = useState({ url: '', category: '' });
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Plan limits
+  const { checkLimit, currentPlan } = usePlanLimits();
+  const [upgradeDialogOpen, setUpgradeDialogOpen] = useState(false);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -194,7 +200,16 @@ export function PortfolioStep({ config, onAddPhoto, onAddPhotos, onRemovePhoto, 
           </div>
           <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-yellow-500 hover:bg-yellow-600 text-black">
+              <Button
+                className="bg-yellow-500 hover:bg-yellow-600 text-black"
+                onClick={(e) => {
+                  // Check photo limit before opening dialog
+                  if (checkLimit('photos', photos.length)) {
+                    e.preventDefault();
+                    setUpgradeDialogOpen(true);
+                  }
+                }}
+              >
                 <Upload className="w-4 h-4 mr-2" />
                 Ajouter une photo
               </Button>
@@ -322,6 +337,14 @@ export function PortfolioStep({ config, onAddPhoto, onAddPhotos, onRemovePhoto, 
           Continuer
         </Button>
       </div>
+
+      {/* Upgrade Dialog */}
+      <UpgradeDialog
+        open={upgradeDialogOpen}
+        onClose={() => setUpgradeDialogOpen(false)}
+        feature="photos"
+        currentPlan={currentPlan}
+      />
     </div>
   );
 }

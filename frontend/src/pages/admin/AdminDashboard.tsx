@@ -13,9 +13,11 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Eye, Trash2, Share2, Search, Star, Plus, Youtube, Users, MessageSquare, MessageCircle, Heart } from 'lucide-react';
+import { Eye, Trash2, Share2, Search, Star, Plus, Youtube, Users, MessageSquare, MessageCircle, Heart, Globe } from 'lucide-react';
 import { Input } from "@/components/ui/input";
 import ShareDialog from '../../components/Delivery/ShareDialog';
+import { usePlanLimits } from '@/hooks/usePlanLimits';
+import { UpgradeDialog } from '@/components/common/UpgradeDialog';
 
 const AdminDashboard: React.FC = () => {
     const navigate = useNavigate();
@@ -24,6 +26,11 @@ const AdminDashboard: React.FC = () => {
     const [shareDialogOpen, setShareDialogOpen] = useState(false);
     const [shareUuid, setShareUuid] = useState('');
     const [user, setUser] = useState<any>(null);
+
+    // Plan limits
+    const { checkLimit, limits, currentPlan } = usePlanLimits();
+    const [upgradeDialogOpen, setUpgradeDialogOpen] = useState(false);
+    const [upgradeFeature, setUpgradeFeature] = useState<'photos' | 'galleries' | 'domain' | 'branding'>('galleries');
 
     useEffect(() => {
         setUser(authService.getCurrentUser());
@@ -78,7 +85,7 @@ const AdminDashboard: React.FC = () => {
                     <p className="text-slate-600 text-lg">
                         Débloquez toutes les fonctionnalités premium : Stockage illimité, noms de domaine personnalisés et bien plus encore.
                     </p>
-                    <Button className="bg-[#FFD700] text-black hover:bg-[#E5C100] font-bold rounded-full px-8 h-12 text-base transition-all transform hover:scale-105">
+                    <Button className="bg-[#4caf50] text-white hover:bg-[#45a049] font-bold rounded-full px-8 h-12 text-base transition-all transform hover:scale-105">
                         Passer Pro <span className="ml-2">&gt;</span>
                     </Button>
                 </div>
@@ -122,8 +129,16 @@ const AdminDashboard: React.FC = () => {
             {/* Quick Actions & Toolbar */}
             <div className="flex flex-wrap items-center gap-8 mb-4">
                 <Button
-                    className="bg-[#FFD700] text-black hover:bg-[#E5C100] gap-2 rounded-full px-6 font-medium shadow-sm transition-transform hover:scale-105"
-                    onClick={() => navigate('/admin/new-delivery')}
+                    className="bg-[#4caf50] text-white hover:bg-[#45a049] gap-2 rounded-full px-6 font-medium shadow-sm transition-transform hover:scale-105"
+                    onClick={() => {
+                        // Check gallery limit before navigation
+                        if (checkLimit('galleries', galleries.length)) {
+                            setUpgradeFeature('galleries');
+                            setUpgradeDialogOpen(true);
+                        } else {
+                            navigate('/admin/new-delivery');
+                        }
+                    }}
                 >
                     <div className="p-1 bg-black/10 rounded-full">
                         <Plus className="w-3 h-3" />
@@ -131,11 +146,29 @@ const AdminDashboard: React.FC = () => {
                     Ajouter une livraison
                 </Button>
 
+                {/* <Button
+                    variant="outline"
+                    className="gap-2 rounded-full px-6 font-medium shadow-sm transition-transform hover:scale-105 border-blue-200 text-blue-600 hover:bg-blue-50"
+                    onClick={() => {
+                        // Check if custom domain is allowed
+                        if (!limits.canCustomDomain) {
+                            setUpgradeFeature('domain');
+                            setUpgradeDialogOpen(true);
+                        } else {
+                            // TODO: Navigate to domain settings
+                            alert('Paramètres de domaine à implémenter');
+                        }
+                    }}
+                >
+                    <Globe className="w-4 h-4" />
+                    Connecter mon domaine
+                </Button> */}
+
                 <div className="relative flex-1 max-w-sm">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                     <Input
                         placeholder="Rechercher une livraison..."
-                        className="pl-10 bg-white rounded-full border-slate-200 focus-visible:ring-yellow-400"
+                        className="pl-10 bg-white rounded-full border-slate-200 focus-visible:ring-green-400"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
@@ -193,7 +226,7 @@ const AdminDashboard: React.FC = () => {
                                     </TableCell>
                                     <TableCell>
                                         <div className="flex items-center gap-1.5">
-                                            <Heart className="w-4 h-4 text-yellow-500 fill-yellow-500" />
+                                            <Heart className="w-4 h-4 text-green-500 fill-green-500" />
                                             <span className="font-medium text-slate-700">
                                                 {gallery.images.filter(img => img.isLiked).length}
                                             </span>
@@ -244,15 +277,15 @@ const AdminDashboard: React.FC = () => {
                         <h3 className="text-xl font-bold text-slate-900">Rejoignez notre Hub</h3>
                         <p className="text-slate-500 text-sm max-w-xs mx-auto mt-2">Rejoignez la communauté d'entraide des créateurs Ultimate</p>
                     </div>
-                    <Button className="bg-[#FFD700] text-black hover:bg-[#E5C100] rounded-full px-8 font-medium">
+                    <Button className="bg-[#4caf50] text-white hover:bg-[#45a049] rounded-full px-8 font-medium">
                         Rejoindre maintenant
                     </Button>
                 </div>
 
                 {/* Suggestions */}
                 <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4">
-                    <div className="w-10 h-10 bg-yellow-50 rounded-full flex items-center justify-center flex-shrink-0">
-                        <MessageSquare className="w-5 h-5 text-yellow-600" />
+                    <div className="w-10 h-10 bg-green-50 rounded-full flex items-center justify-center flex-shrink-0">
+                        <MessageSquare className="w-5 h-5 text-green-600" />
                     </div>
                     <div>
                         <h4 className="font-bold text-slate-900">Partagez vos suggestions</h4>
@@ -276,6 +309,14 @@ const AdminDashboard: React.FC = () => {
                 open={shareDialogOpen}
                 onClose={() => setShareDialogOpen(false)}
                 uuid={shareUuid}
+            />
+
+            {/* Upgrade Dialog */}
+            <UpgradeDialog
+                open={upgradeDialogOpen}
+                onClose={() => setUpgradeDialogOpen(false)}
+                feature={upgradeFeature}
+                currentPlan={currentPlan}
             />
         </div>
     );

@@ -21,6 +21,12 @@ import AdminLayout from '@/components/Layout/AdminLayout';
 import ClientGalleryView from '@/pages/client/ClientGalleryView';
 
 // ============================================
+// PUBLIC PAGES IMPORTS
+// ============================================
+import LandingPage from '@/pages/LandingPage';
+import PricingPage from '@/pages/PricingPage';
+
+// ============================================
 // BUILDER IMPORTS
 // ============================================
 import { BuilderLayout } from '@/builder/BuilderLayout';
@@ -210,6 +216,13 @@ function App() {
       <BrowserRouter>
         <Routes>
           {/* =========================================
+              PUBLIC PAGES (Landing, Pricing)
+              =========================================
+          */}
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/pricing" element={<PricingPage />} />
+
+          {/* =========================================
               GALERIE CLIENT (Public, pas de layout)
               =========================================
           */}
@@ -219,8 +232,8 @@ function App() {
               AUTHENTIFICATION
               =========================================
           */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<SignUp />} />
+          <Route path="/auth/login" element={<Login />} />
+          <Route path="/auth/register" element={<SignUp />} />
 
           {/* =========================================
               ROUTES ADMIN (Protégées)
@@ -264,7 +277,8 @@ function App() {
               REDIRECTIONS
               =========================================
           */}
-          <Route path="/" element={<Navigate to="/login" replace />} />
+          <Route path="/login" element={<Navigate to="/auth/login" replace />} />
+          <Route path="/signup" element={<Navigate to="/auth/register" replace />} />
           <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
 
           {/* =========================================
