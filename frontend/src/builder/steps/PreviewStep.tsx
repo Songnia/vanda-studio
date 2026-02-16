@@ -87,7 +87,7 @@ export function PreviewStep({ config, onReset, onPrev }: PreviewStepProps) {
           </DialogContent>
         </Dialog>
 
-        <Button onClick={handleExport} className="bg-yellow-500 hover:bg-yellow-600 text-black gap-2">
+        <Button onClick={handleExport} className="bg-green-500 hover:bg-green-600 text-black gap-2">
           <Download className="w-4 h-4" />
           Télécharger le site
         </Button>
@@ -102,7 +102,7 @@ export function PreviewStep({ config, onReset, onPrev }: PreviewStepProps) {
       <Card className="p-4">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <Eye className="w-5 h-5 text-yellow-500" />
+            <Eye className="w-5 h-5 text-green-500" />
             <h3 className="font-semibold">Aperçu en direct</h3>
           </div>
           <div className="flex gap-1 bg-gray-100 rounded-lg p-1">
@@ -142,19 +142,19 @@ export function PreviewStep({ config, onReset, onPrev }: PreviewStepProps) {
         <h3 className="font-semibold mb-4">Récapitulatif de votre site</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="text-center p-4 bg-gray-50 rounded-lg">
-            <p className="text-2xl font-bold text-yellow-500">{config.photos.length}</p>
+            <p className="text-2xl font-bold text-green-500">{config.photos.length}</p>
             <p className="text-sm text-gray-600">Photos</p>
           </div>
           <div className="text-center p-4 bg-gray-50 rounded-lg">
-            <p className="text-2xl font-bold text-yellow-500">{config.services.length}</p>
+            <p className="text-2xl font-bold text-green-500">{config.services.length}</p>
             <p className="text-sm text-gray-600">Services</p>
           </div>
           <div className="text-center p-4 bg-gray-50 rounded-lg">
-            <p className="text-2xl font-bold text-yellow-500">{config.pricingPlans.length}</p>
+            <p className="text-2xl font-bold text-green-500">{config.pricingPlans.length}</p>
             <p className="text-sm text-gray-600">Forfaits</p>
           </div>
           <div className="text-center p-4 bg-gray-50 rounded-lg">
-            <p className="text-2xl font-bold text-yellow-500">{config.testimonials.length}</p>
+            <p className="text-2xl font-bold text-green-500">{config.testimonials.length}</p>
             <p className="text-sm text-gray-600">Témoignages</p>
           </div>
         </div>
@@ -355,7 +355,7 @@ function generateSiteCode(config: SiteConfig): string {
                 ${config.testimonials.map(testimonial => `
                 <div class="p-6 bg-white rounded-xl">
                     <div class="flex gap-1 mb-4">
-                        ${[...Array(testimonial.rating)].map(() => '<span class="text-yellow-400">★</span>').join('')}
+                        ${[...Array(testimonial.rating)].map(() => '<span class="text-green-400">★</span>').join('')}
                     </div>
                     <p class="text-gray-700 italic mb-6">"${testimonial.content}"</p>
                     <div class="flex items-center gap-3">

@@ -65,7 +65,7 @@ export function ContactStep({ config, onUpdate, onNext, onPrev }: ContactStepPro
         {/* Coordonnées */}
         <Card className="p-6">
           <div className="flex items-center gap-2 mb-4">
-            <Mail className="w-5 h-5 text-yellow-500" />
+            <Mail className="w-5 h-5 text-green-500" />
             <h3 className="font-semibold">Coordonnées</h3>
           </div>
 
@@ -136,7 +136,7 @@ export function ContactStep({ config, onUpdate, onNext, onPrev }: ContactStepPro
         {/* Réseaux sociaux */}
         <Card className="p-6">
           <div className="flex items-center gap-2 mb-4">
-            <Link2 className="w-5 h-5 text-yellow-500" />
+            <Link2 className="w-5 h-5 text-green-500" />
             <h3 className="font-semibold">Réseaux sociaux</h3>
           </div>
 
@@ -189,19 +189,19 @@ export function ContactStep({ config, onUpdate, onNext, onPrev }: ContactStepPro
             <h4 className="font-medium text-gray-700">Contactez-nous</h4>
             {formData.email && (
               <div className="flex items-center gap-3 text-sm">
-                <Mail className="w-4 h-4 text-yellow-500" />
+                <Mail className="w-4 h-4 text-green-500" />
                 <span>{formData.email}</span>
               </div>
             )}
             {formData.phone && (
               <div className="flex items-center gap-3 text-sm">
-                <Phone className="w-4 h-4 text-yellow-500" />
+                <Phone className="w-4 h-4 text-green-500" />
                 <span>{formData.phone}</span>
               </div>
             )}
             {(formData.address || formData.city) && (
               <div className="flex items-center gap-3 text-sm">
-                <MapPin className="w-4 h-4 text-yellow-500" />
+                <MapPin className="w-4 h-4 text-green-500" />
                 <span>
                   {[formData.address, formData.city, formData.country].filter(Boolean).join(', ')}
                 </span>
@@ -244,7 +244,7 @@ export function ContactStep({ config, onUpdate, onNext, onPrev }: ContactStepPro
         <Button 
           onClick={handleSubmit}
           disabled={!formData.email}
-          className="bg-yellow-500 hover:bg-yellow-600 text-black"
+          className="bg-green-500 hover:bg-green-600 text-black"
         >
           Continuer
         </Button>

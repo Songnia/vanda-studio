@@ -17,7 +17,7 @@ const colorPresets = [
     name: "Classique",
     primary: "#1a1a1a",
     secondary: "#f5f5f5",
-    accent: "#f0e100",
+    accent: "#4caf50",
     background: "#ffffff",
     text: "#1a1a1a"
   },
@@ -25,7 +25,7 @@ const colorPresets = [
     name: "Élégant",
     primary: "#2c1810",
     secondary: "#faf7f5",
-    accent: "#c9a227",
+    accent: "#4caf50",
     background: "#ffffff",
     text: "#2c1810"
   },
@@ -106,7 +106,7 @@ export function BrandingStep({ config, onUpdate, onNext, onPrev }: BrandingStepP
             <button
               key={preset.name}
               onClick={() => applyPreset(preset)}
-              className="flex flex-col items-center gap-2 p-3 rounded-lg border hover:border-yellow-500 transition-colors"
+              className="flex flex-col items-center gap-2 p-3 rounded-lg border hover:border-green-500 transition-colors"
             >
               <div className="flex gap-1">
                 <div
@@ -127,7 +127,7 @@ export function BrandingStep({ config, onUpdate, onNext, onPrev }: BrandingStepP
       <Card className="p-6">
         <div className="space-y-6">
           <div className="flex items-center gap-2 mb-4">
-            <Palette className="w-5 h-5 text-yellow-500" />
+            <Palette className="w-5 h-5 text-green-500" />
             <h3 className="font-semibold">Couleurs personnalisées</h3>
           </div>
 
@@ -256,7 +256,7 @@ export function BrandingStep({ config, onUpdate, onNext, onPrev }: BrandingStepP
         </Button>
         <Button
           onClick={handleSubmit}
-          className="bg-yellow-500 hover:bg-yellow-600 text-black"
+          className="bg-green-500 hover:bg-green-600 text-black"
         >
           Continuer
         </Button>

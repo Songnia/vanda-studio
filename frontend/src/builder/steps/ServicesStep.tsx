@@ -86,12 +86,12 @@ export function ServicesStep({
       <Card className="p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-2">
-            <Briefcase className="w-5 h-5 text-yellow-500" />
+            <Briefcase className="w-5 h-5 text-green-500" />
             <h3 className="font-semibold">Services ({services.length})</h3>
           </div>
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-yellow-500 hover:bg-yellow-600 text-black">
+              <Button className="bg-green-500 hover:bg-green-600 text-black">
                 <Plus className="w-4 h-4 mr-2" />
                 Ajouter un service
               </Button>
@@ -154,7 +154,7 @@ export function ServicesStep({
                 <Button 
                   onClick={handleAddService}
                   disabled={!newService.title || !newService.description}
-                  className="w-full bg-yellow-500 hover:bg-yellow-600 text-black"
+                  className="w-full bg-green-500 hover:bg-green-600 text-black"
                 >
                   Ajouter le service
                 </Button>
@@ -184,8 +184,8 @@ export function ServicesStep({
                   />
                 ) : (
                   <div className="flex items-start gap-4">
-                    <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-yellow-100 flex items-center justify-center">
-                      <span className="text-sm font-bold text-yellow-600">{index + 1}</span>
+                    <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center">
+                      <span className="text-sm font-bold text-green-600">{index + 1}</span>
                     </div>
                     <div className="flex-1">
                       <h4 className="font-semibold text-lg">{service.title}</h4>
@@ -231,7 +231,7 @@ export function ServicesStep({
         </Button>
         <Button 
           onClick={onNext}
-          className="bg-yellow-500 hover:bg-yellow-600 text-black"
+          className="bg-green-500 hover:bg-green-600 text-black"
         >
           Continuer
         </Button>

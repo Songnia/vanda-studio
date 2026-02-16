@@ -2,6 +2,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { Rocket, Star, TrendingUp, X } from 'lucide-react';
+import { useEffect } from 'react';
 
 interface UpgradeDialogProps {
     open: boolean;
@@ -12,6 +13,13 @@ interface UpgradeDialogProps {
 
 export function UpgradeDialog({ open, onClose, feature, currentPlan = 'starter' }: UpgradeDialogProps) {
     const navigate = useNavigate();
+
+    // Track when dialog is shown
+    useEffect(() => {
+        if (open) {
+            // Original tracking removed
+        }
+    }, [open, feature, currentPlan]);
 
     const getFeatureContext = () => {
         switch (feature) {

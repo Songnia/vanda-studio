@@ -17,7 +17,7 @@ export function AdminHeader() {
         actions = (
             <Button
                 size="sm"
-                className="bg-[#f2f20d] text-black hover:bg-[#d9d90b] gap-2"
+                className="bg-[#4caf50] text-black hover:bg-[#d9d90b] gap-2"
                 onClick={() => navigate('/admin/new-delivery')}
             >
                 <Plus className="w-4 h-4" />
@@ -33,7 +33,7 @@ export function AdminHeader() {
                     <Eye className="w-4 h-4" />
                     Aperçu
                 </Button>
-                <Button size="sm" className="bg-[#f2f20d] text-black hover:bg-[#d9d90b] gap-2">
+                <Button size="sm" className="bg-[#4caf50] text-black hover:bg-[#d9d90b] gap-2">
                     <Check className="w-4 h-4" />
                     Publier
                 </Button>

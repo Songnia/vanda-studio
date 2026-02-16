@@ -230,7 +230,7 @@ export function InfoStep({ config, onUpdate, onNext, onPrev }: InfoStepProps) {
       <Card className="p-6">
         <div className="space-y-6">
           <div className="flex items-center gap-2 mb-4">
-            <User className="w-5 h-5 text-yellow-500" />
+            <User className="w-5 h-5 text-green-500" />
             <h3 className="text-lg font-semibold">À propos du promoteur</h3>
           </div>
 
@@ -315,7 +315,7 @@ export function InfoStep({ config, onUpdate, onNext, onPrev }: InfoStepProps) {
         <Button
           onClick={handleSubmit}
           disabled={!formData.siteName || !formData.email}
-          className="bg-yellow-500 hover:bg-yellow-600 text-black"
+          className="bg-green-500 hover:bg-green-600 text-black"
         >
           Continuer
         </Button>

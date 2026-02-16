@@ -149,14 +149,14 @@ export function PortfolioStep({ config, onAddPhoto, onAddPhotos, onRemovePhoto, 
       {/* Catégories */}
       <Card className="p-4">
         <div className="flex items-center gap-2 mb-3">
-          <Folder className="w-4 h-4 text-yellow-500" />
+          <Folder className="w-4 h-4 text-green-500" />
           <Label>Catégories</Label>
         </div>
         <div className="flex flex-wrap gap-2 mb-3">
           <button
             onClick={() => setSelectedCategory('')}
             className={`px-3 py-1 rounded-full text-sm transition-colors ${selectedCategory === ''
-              ? 'bg-yellow-500 text-black'
+              ? 'bg-green-500 text-black'
               : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
           >
@@ -169,7 +169,7 @@ export function PortfolioStep({ config, onAddPhoto, onAddPhotos, onRemovePhoto, 
                 key={cat}
                 onClick={() => setSelectedCategory(cat === selectedCategory ? '' : cat)}
                 className={`px-3 py-1 rounded-full text-sm transition-colors ${selectedCategory === cat
-                  ? 'bg-yellow-500 text-black'
+                  ? 'bg-green-500 text-black'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
               >
@@ -195,13 +195,13 @@ export function PortfolioStep({ config, onAddPhoto, onAddPhotos, onRemovePhoto, 
       <Card className="p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <LayoutGrid className="w-5 h-5 text-yellow-500" />
+            <LayoutGrid className="w-5 h-5 text-green-500" />
             <h3 className="font-semibold">Photos ({filteredPhotos.length})</h3>
           </div>
           <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
             <DialogTrigger asChild>
               <Button
-                className="bg-yellow-500 hover:bg-yellow-600 text-black"
+                className="bg-green-500 hover:bg-green-600 text-black"
                 onClick={(e) => {
                   // Check photo limit before opening dialog
                   if (checkLimit('photos', photos.length)) {
@@ -239,7 +239,7 @@ export function PortfolioStep({ config, onAddPhoto, onAddPhotos, onRemovePhoto, 
                       }
                     }}
                     className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${newPhoto.category
-                      ? 'border-gray-300 hover:border-yellow-500'
+                      ? 'border-gray-300 hover:border-green-500'
                       : 'border-red-200 bg-red-50/10 grayscale cursor-not-allowed'
                       }`}
                   >
@@ -285,7 +285,7 @@ export function PortfolioStep({ config, onAddPhoto, onAddPhotos, onRemovePhoto, 
                 <Button
                   onClick={handleAddPhoto}
                   disabled={!newPhoto.url || !newPhoto.category}
-                  className="w-full bg-yellow-500 hover:bg-yellow-600 text-black"
+                  className="w-full bg-green-500 hover:bg-green-600 text-black"
                 >
                   Ajouter au portfolio
                 </Button>
@@ -332,7 +332,7 @@ export function PortfolioStep({ config, onAddPhoto, onAddPhotos, onRemovePhoto, 
         </Button>
         <Button
           onClick={onNext}
-          className="bg-yellow-500 hover:bg-yellow-600 text-black"
+          className="bg-green-500 hover:bg-green-600 text-black"
         >
           Continuer
         </Button>

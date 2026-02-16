@@ -120,7 +120,7 @@ export function HeroStep({ config, onUpdate, onNext, onPrev }: HeroStepProps) {
             {heroImages.length === 0 ? (
               <div
                 onClick={() => fileInputRef.current?.click()}
-                className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:border-yellow-500 transition-colors"
+                className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:border-green-500 transition-colors"
               >
                 <Upload className="w-12 h-12 mx-auto text-gray-400 mb-3" />
                 <p className="text-gray-600 font-medium">Cliquez pour ajouter des images</p>
@@ -147,7 +147,7 @@ export function HeroStep({ config, onUpdate, onNext, onPrev }: HeroStepProps) {
                   ))}
                   <button
                     onClick={() => fileInputRef.current?.click()}
-                    className="aspect-video border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center hover:border-yellow-500 transition-colors"
+                    className="aspect-video border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center hover:border-green-500 transition-colors"
                   >
                     <Upload className="w-8 h-8 text-gray-400" />
                     <span className="text-sm text-gray-500 mt-1">Ajouter</span>
@@ -163,7 +163,7 @@ export function HeroStep({ config, onUpdate, onNext, onPrev }: HeroStepProps) {
           {/* Options CTA */}
           <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
             <div className="flex items-center gap-3">
-              <Sparkles className="w-5 h-5 text-yellow-500" />
+              <Sparkles className="w-5 h-5 text-green-500" />
               <div>
                 <p className="font-medium">Boutons d'action</p>
                 <p className="text-sm text-gray-500">Afficher "Voir le portfolio" et "Réserver"</p>
@@ -173,11 +173,11 @@ export function HeroStep({ config, onUpdate, onNext, onPrev }: HeroStepProps) {
           </div>
 
           {/* Flash Info Configuration */}
-          <Card className="p-4 border-yellow-200 bg-yellow-50/30">
+          <Card className="p-4 border-green-200 bg-green-50/30">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Zap className="w-5 h-5 text-yellow-600" />
+                  <Zap className="w-5 h-5 text-green-600" />
                   <h3 className="font-bold text-gray-900">Bandeau "Flash Info"</h3>
                 </div>
                 <Switch
@@ -189,7 +189,7 @@ export function HeroStep({ config, onUpdate, onNext, onPrev }: HeroStepProps) {
               </div>
 
               {config.flashInfo.enabled && (
-                <div className="space-y-4 pt-2 border-t border-yellow-100">
+                <div className="space-y-4 pt-2 border-t border-green-100">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label>Titre de l'offre</Label>
@@ -243,7 +243,7 @@ export function HeroStep({ config, onUpdate, onNext, onPrev }: HeroStepProps) {
                           variant="outline"
                           size="sm"
                           onClick={() => flashInfoFileInputRef.current?.click()}
-                          className="w-full border-dashed border-yellow-300 hover:border-yellow-400 bg-white"
+                          className="w-full border-dashed border-green-300 hover:border-green-400 bg-white"
                         >
                           <Upload className="w-4 h-4 mr-2" />
                           {config.flashInfo.backgroundImage ? 'Changer l\'image' : 'Sélectionner une image'}
@@ -251,7 +251,7 @@ export function HeroStep({ config, onUpdate, onNext, onPrev }: HeroStepProps) {
                       </div>
 
                       {config.flashInfo.backgroundImage && (
-                        <div className="relative group w-24 h-12 border border-yellow-200 rounded overflow-hidden shadow-sm">
+                        <div className="relative group w-24 h-12 border border-green-200 rounded overflow-hidden shadow-sm">
                           <img
                             src={config.flashInfo.backgroundImage}
                             alt="Aperçu Bandeau"
@@ -328,7 +328,7 @@ export function HeroStep({ config, onUpdate, onNext, onPrev }: HeroStepProps) {
         </Button>
         <Button
           onClick={handleSubmit}
-          className="bg-yellow-500 hover:bg-yellow-600 text-black"
+          className="bg-green-500 hover:bg-green-600 text-black"
         >
           Continuer
         </Button>

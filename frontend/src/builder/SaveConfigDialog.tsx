@@ -211,7 +211,7 @@ export function SaveConfigDialog({ open, onOpenChange, config, onSaved }: SaveCo
                                         <code className="bg-muted px-2 py-1 rounded">686 265 447</code>
                                     </div>
                                     <div className="flex justify-between items-center">
-                                        <span className="font-medium text-yellow-500">MTN Mobile Money</span>
+                                        <span className="font-medium text-green-500">MTN Mobile Money</span>
                                         <code className="bg-muted px-2 py-1 rounded">654 725 521</code>
                                     </div>
                                 </AlertDescription>

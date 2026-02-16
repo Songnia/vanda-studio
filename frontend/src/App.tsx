@@ -63,6 +63,7 @@ function BuilderApp() {
     currentStep,
     updateConfig,
     addPhoto,
+    addPhotos,
     removePhoto,
     addService,
     removeService,
@@ -119,6 +120,7 @@ function BuilderApp() {
           <PortfolioStep
             config={config}
             onAddPhoto={addPhoto}
+            onAddPhotos={addPhotos}
             onRemovePhoto={removePhoto}
             onNext={nextStep}
             onPrev={prevStep}
@@ -205,6 +207,9 @@ function BuilderApp() {
  * - Template (sites photographes /:slug)
  */
 function App() {
+  // function App() {
+  //   return (
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />

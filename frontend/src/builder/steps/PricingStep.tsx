@@ -91,12 +91,12 @@ export function PricingStep({
       <Card className="p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-2">
-            <Euro className="w-5 h-5 text-yellow-500" />
+            <Euro className="w-5 h-5 text-green-500" />
             <h3 className="font-semibold">Forfaits ({plans.length})</h3>
           </div>
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-yellow-500 hover:bg-yellow-600 text-black">
+              <Button className="bg-green-500 hover:bg-green-600 text-black">
                 <Plus className="w-4 h-4 mr-2" />
                 Ajouter un forfait
               </Button>
@@ -143,7 +143,7 @@ export function PricingStep({
                 {/* Recommandé */}
                 <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                   <div className="flex items-center gap-2">
-                    <Star className="w-4 h-4 text-yellow-500" />
+                    <Star className="w-4 h-4 text-green-500" />
                     <span className="text-sm">Marquer comme recommandé</span>
                   </div>
                   <Switch 
@@ -182,7 +182,7 @@ export function PricingStep({
                 <Button 
                   onClick={handleAddPlan}
                   disabled={!newPlan.name || !newPlan.price}
-                  className="w-full bg-yellow-500 hover:bg-yellow-600 text-black"
+                  className="w-full bg-green-500 hover:bg-green-600 text-black"
                 >
                   Ajouter le forfait
                 </Button>
@@ -202,11 +202,11 @@ export function PricingStep({
             {plans.map((plan) => (
               <Card 
                 key={plan.id} 
-                className={`p-5 relative ${plan.recommended ? 'ring-2 ring-yellow-400' : ''}`}
+                className={`p-5 relative ${plan.recommended ? 'ring-2 ring-green-400' : ''}`}
               >
                 {plan.recommended && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <span className="bg-yellow-400 text-black text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1">
+                    <span className="bg-green-400 text-black text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1">
                       <Star className="w-3 h-3" />
                       RECOMMANDÉ
                     </span>
@@ -290,7 +290,7 @@ export function PricingStep({
         </Button>
         <Button 
           onClick={onNext}
-          className="bg-yellow-500 hover:bg-yellow-600 text-black"
+          className="bg-green-500 hover:bg-green-600 text-black"
         >
           Continuer
         </Button>

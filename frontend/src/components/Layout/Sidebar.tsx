@@ -50,7 +50,7 @@ export function Sidebar({ className, showLogo = true }: SidebarProps) {
                         className={({ isActive }) => cn(
                             "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group",
                             "text-slate-600 hover:bg-white hover:text-slate-900 border-l-4 border-transparent",
-                            isActive && "bg-white text-slate-900 shadow-sm border-l-[#f2f20d]"
+                            isActive && "bg-white text-slate-900 shadow-sm border-l-[#4caf50]"
                         )}
                     >
                         <item.icon className="w-5 h-5" />

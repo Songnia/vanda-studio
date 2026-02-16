@@ -29,7 +29,7 @@ export function BuilderLayout({
           <div className="flex items-center justify-between">
             {/* Logo */}
             <div className="flex items-center gap-2">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center">
                 <Camera className="w-5 h-5 text-white" />
               </div>
               <div>
@@ -45,7 +45,7 @@ export function BuilderLayout({
               </span>
               <div className="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-yellow-500 transition-all duration-300"
+                  className="h-full bg-green-500 transition-all duration-300"
                   style={{ width: `${progress}%` }}
                 />
               </div>

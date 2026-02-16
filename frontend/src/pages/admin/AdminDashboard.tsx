@@ -78,9 +78,9 @@ const AdminDashboard: React.FC = () => {
     return (
         <div className="max-w-6xl mx-auto space-y-8">
             {/* Upgrade Banner 
-            <div className="bg-[#FFFAF0] rounded-3xl p-8 flex flex-col md:flex-row items-center justify-between relative overflow-hidden border border-yellow-100 shadow-sm transition-all hover:shadow-md">
+            <div className="bg-[#FFFAF0] rounded-3xl p-8 flex flex-col md:flex-row items-center justify-between relative overflow-hidden border border-green-100 shadow-sm transition-all hover:shadow-md">
                 <div className="z-10 relative space-y-4 max-w-xl">
-                    <div className="text-yellow-600 font-bold tracking-wide text-xs uppercase">UPGRADE PRO</div>
+                    <div className="text-green-600 font-bold tracking-wide text-xs uppercase">UPGRADE PRO</div>
                     <h2 className="text-3xl md:text-4xl font-bold text-slate-900 font-serif">Passez au niveau supérieur.</h2>
                     <p className="text-slate-600 text-lg">
                         Débloquez toutes les fonctionnalités premium : Stockage illimité, noms de domaine personnalisés et bien plus encore.
@@ -91,14 +91,14 @@ const AdminDashboard: React.FC = () => {
                 </div>
 
                 <div className="hidden md:block relative">
-                    <div className="absolute -right-20 -top-40 w-80 h-80 bg-yellow-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30"></div>
-                    <div className="absolute -right-10 top-10 w-60 h-60 bg-yellow-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30"></div>
+                    <div className="absolute -right-20 -top-40 w-80 h-80 bg-green-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30"></div>
+                    <div className="absolute -right-10 top-10 w-60 h-60 bg-green-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30"></div>
 
                     <div className="relative w-72 h-44 bg-white rounded-2xl shadow-xl border border-slate-100 p-6 rotate-3 transform transition-transform hover:rotate-0 duration-500">
                         <div className="flex items-center justify-between mb-8">
                             <div className="flex items-center gap-2">
-                                <div className="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
-                                    <Star className="w-5 h-5 text-yellow-600 fill-yellow-600" />
+                                <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                                    <Star className="w-5 h-5 text-green-600 fill-green-600" />
                                 </div>
                                 <span className="font-bold text-slate-900">Pro Plan</span>
                             </div>

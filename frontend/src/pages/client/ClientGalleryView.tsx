@@ -24,7 +24,7 @@ import { galleryService } from '../../services/galleryService';
 import Navbar from '../../template/components/Layout/Navbar';
 import Footer from '../../template/components/Layout/Footer';
 import { SiteConfigProvider, useSiteConfig } from '@/context/SiteConfigContext';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { createTheme, ThemeProvider, alpha } from '@mui/material/styles';
 import type { Gallery } from '../../types/gallery';
 
 const GalleryContent: React.FC<{ gallery: Gallery; onUpdateGallery: (g: Gallery) => void }> = ({ gallery, onUpdateGallery }) => {
@@ -108,7 +108,7 @@ const GalleryContent: React.FC<{ gallery: Gallery; onUpdateGallery: (g: Gallery)
                 <Box
                     sx={{
                         height: '70vh',
-                        backgroundImage: `linear-gradient(rgba(0,0,0,0.3), primary.transparent), url(${heroImage})`,
+                        backgroundImage: `linear-gradient(rgba(0,0,0,0.3), ${alpha(photographerTheme.palette.primary.main, 0.2)}), url("${heroImage}")`,
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         display: 'flex',
@@ -124,7 +124,7 @@ const GalleryContent: React.FC<{ gallery: Gallery; onUpdateGallery: (g: Gallery)
                             variant="h1"
                             sx={{
                                 color: 'secondary.main',
-                                textShadow: '2px 2px 8px primary.transparent',
+                                textShadow: `2px 2px 8px ${alpha(photographerTheme.palette.primary.main, 0.5)}`,
                                 fontSize: { xs: '3rem', md: '4.5rem' }, // Larger font
                                 mb: 2,
                                 fontFamily: '"Playfair Display", serif', // Ensure serif font
@@ -137,8 +137,8 @@ const GalleryContent: React.FC<{ gallery: Gallery; onUpdateGallery: (g: Gallery)
                             <Typography
                                 variant="h6"
                                 sx={{
-                                    color: 'secondary',
-                                    textShadow: '1px 1px 4px primary.transparent)',
+                                    color: 'secondary.main',
+                                    textShadow: `1px 1px 4px ${alpha(photographerTheme.palette.primary.main, 0.5)}`,
                                     mb: 1,
                                     fontWeight: 300,
                                 }}
@@ -176,7 +176,7 @@ const GalleryContent: React.FC<{ gallery: Gallery; onUpdateGallery: (g: Gallery)
                             px: 3,
                             py: 1.5,
                             fontSize: '1rem',
-                            boxShadow: '0 4px 12px primary.transparent',
+                            boxShadow: `0 4px 12px ${alpha(photographerTheme.palette.primary.main, 0.3)}`,
                             '&:hover': {
                                 backgroundColor: 'primary.dark',
                             }
@@ -212,7 +212,7 @@ const GalleryContent: React.FC<{ gallery: Gallery; onUpdateGallery: (g: Gallery)
                             {selectedCount > 0 && (
                                 <Badge badgeContent={selectedCount} color="primary">
                                     <Typography variant="body2" sx={{ mr: 1 }}>
-                                        Sélectionnées
+                                        choisies
                                     </Typography>
                                 </Badge>
                             )}
@@ -272,7 +272,7 @@ const GalleryContent: React.FC<{ gallery: Gallery; onUpdateGallery: (g: Gallery)
                                             left: 0,
                                             right: 0,
                                             bottom: 0,
-                                            background: 'primary.transparent',
+                                            backgroundColor: alpha(photographerTheme.palette.primary.main, 0.8),
                                             opacity: 0,
                                             transition: 'opacity 0.3s',
                                             display: 'flex',

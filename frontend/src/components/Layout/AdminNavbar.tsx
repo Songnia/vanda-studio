@@ -89,7 +89,7 @@ export function AdminNavbar() {
                 <div className="flex items-center gap-2">
                     {/* Placeholder Logo */}
                     <div className="font-bold text-xl tracking-tight flex items-center gap-1">
-                        <span className="text-green-500">⚡</span>
+                        <span className="text-green-500">🞹</span>
                         <span>VANDA</span>
                     </div>
                     <span className="bg-gray-100 text-xs px-2 py-0.5 rounded-full text-gray-600 font-medium">

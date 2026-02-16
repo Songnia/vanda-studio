@@ -66,7 +66,7 @@ export function TestimonialsStep({
             disabled={!interactive}
           >
             <Star 
-              className={`w-5 h-5 ${star <= rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} 
+              className={`w-5 h-5 ${star <= rating ? 'fill-green-400 text-green-400' : 'text-gray-300'}`} 
             />
           </button>
         ))}
@@ -84,12 +84,12 @@ export function TestimonialsStep({
       <Card className="p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-2">
-            <MessageSquare className="w-5 h-5 text-yellow-500" />
+            <MessageSquare className="w-5 h-5 text-green-500" />
             <h3 className="font-semibold">Avis ({testimonials.length})</h3>
           </div>
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-yellow-500 hover:bg-yellow-600 text-black">
+              <Button className="bg-green-500 hover:bg-green-600 text-black">
                 <Plus className="w-4 h-4 mr-2" />
                 Ajouter un témoignage
               </Button>
@@ -144,7 +144,7 @@ export function TestimonialsStep({
                 <Button 
                   onClick={handleAddTestimonial}
                   disabled={!newTestimonial.name || !newTestimonial.content}
-                  className="w-full bg-yellow-500 hover:bg-yellow-600 text-black"
+                  className="w-full bg-green-500 hover:bg-green-600 text-black"
                 >
                   Ajouter le témoignage
                 </Button>
@@ -197,12 +197,12 @@ export function TestimonialsStep({
                     </div>
 
                     <div className="mb-4">
-                      <span className="text-4xl text-yellow-200 font-serif">"</span>
+                      <span className="text-4xl text-green-200 font-serif">"</span>
                       <p className="text-gray-700 text-sm italic -mt-4">{testimonial.content}</p>
                     </div>
 
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center text-white font-bold">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center text-white font-bold">
                         {testimonial.name.charAt(0).toUpperCase()}
                       </div>
                       <div>
@@ -226,7 +226,7 @@ export function TestimonialsStep({
         </Button>
         <Button 
           onClick={onNext}
-          className="bg-yellow-500 hover:bg-yellow-600 text-black"
+          className="bg-green-500 hover:bg-green-600 text-black"
         >
           Continuer
         </Button>
@@ -258,7 +258,7 @@ function EditTestimonialForm({
             className="cursor-pointer hover:scale-110 transition-transform"
           >
             <Star 
-              className={`w-5 h-5 ${star <= rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} 
+              className={`w-5 h-5 ${star <= rating ? 'fill-green-400 text-green-400' : 'text-gray-300'}`} 
             />
           </button>
         ))}
