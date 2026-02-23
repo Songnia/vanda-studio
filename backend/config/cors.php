@@ -20,9 +20,14 @@ return [
     'allowed_methods' => ['*'],
 
     'allowed_origins' => [
+        // Local development
         'http://localhost:3000',
         'http://localhost:5173',
         'http://localhost:5174',
+        // Production
+        'https://vanda-studio.org',
+        'https://www.vanda-studio.org',
+        'https://app.vanda-studio.org',
     ],
 
     'allowed_origins_patterns' => [],

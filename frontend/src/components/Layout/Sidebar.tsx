@@ -2,11 +2,9 @@ import { NavLink } from 'react-router-dom';
 import {
     LayoutDashboard,
     Package,
-    Palette,
-    LogOut
+    Palette
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { authService } from '../../services/authService';
 
 const navItems = [
     {

@@ -7,6 +7,10 @@ import { createThemeFromConfig } from '@/template/theme/theme';
 import Navbar from './Navbar';
 import Footer from './Footer';
 
+interface LayoutProps {
+    slug?: string; // Slug explicite (mode sous-domaine wildcard)
+}
+
 /**
  * Composant interne qui utilise le context de configuration
  */
@@ -99,10 +103,13 @@ const LayoutContent: React.FC = () => {
 /**
  * Layout principal pour les sites publics
  * Wrapper avec SiteConfigProvider pour charger la config via API
+ * 
+ * - Mode route (/:slug) : le slug vient de useParams automatiquement
+ * - Mode sous-domaine (slug.vanda-studio.org) : le slug est passé en prop
  */
-const Layout: React.FC = () => {
+const Layout: React.FC<LayoutProps> = ({ slug }) => {
     return (
-        <SiteConfigProvider>
+        <SiteConfigProvider slug={slug}>
             <LayoutContent />
         </SiteConfigProvider>
     );

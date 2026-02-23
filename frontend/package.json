@@ -5,7 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "dev:public": "VITE_APP_MODE=public vite",
+    "dev:admin": "VITE_APP_MODE=admin vite",
+    "build": "npm run build:public && npm run build:admin",
+    "build:public": "VITE_APP_MODE=public vite build && mv dist-public/index-public.html dist-public/index.html && cp deploy/public.htaccess dist-public/.htaccess",
+    "build:admin": "VITE_APP_MODE=admin vite build && mv dist-admin/index-admin.html dist-admin/index.html && cp deploy/admin.htaccess dist-admin/.htaccess",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -47,6 +51,7 @@
     "cmdk": "^1.1.1",
     "date-fns": "^4.1.0",
     "embla-carousel-react": "^8.6.0",
+    "framer-motion": "^12.34.2",
     "i18next": "^25.8.1",
     "input-otp": "^1.4.2",
     "lucide-react": "^0.562.0",

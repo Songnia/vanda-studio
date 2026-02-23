@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider, CssBaseline } from '@mui/material';
 import theme from '@/theme/theme';
 import { useBuilder } from '@/hooks/useBuilder';
+import { getSubdomainInfo } from '@/utils/subdomain';
 
 // ============================================
 // ADMIN IMPORTS
@@ -201,90 +202,92 @@ function BuilderApp() {
 
 /**
  * APP PRINCIPALE UNIFIÉE
- * - Admin complet (galeries, livraisons)
- * - Builder (wizard de configuration)
- * - Client (vue galerie publique)
- * - Template (sites photographes /:slug)
+ * Routing par sous-domaine :
+ *   - vanda-studio.org           → Pages publiques (landing, pricing, auth)
+ *   - app.vanda-studio.org       → Admin + Builder
+ *   - slug.vanda-studio.org      → Site du photographe (template)
+ *   - localhost                  → Tout (développement)
  */
 function App() {
-  // function App() {
-  //   return (
+  const { type: subdomainType, slug: photographerSlug } = getSubdomainInfo();
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      {/* 
-         CartProvider a été supprimé d'ici car il est déjà fourni 
-         par TemplateLayout pour les routes /:slug.
-         Si d'autres parties de l'app en ont besoin, il faudra l'ajouter spécifiquement.
-      */}
       <BrowserRouter>
         <Routes>
-          {/* =========================================
-              PUBLIC PAGES (Landing, Pricing)
-              =========================================
-          */}
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/pricing" element={<PricingPage />} />
 
           {/* =========================================
-              GALERIE CLIENT (Public, pas de layout)
+              SITE PHOTOGRAPHE (sous-domaine wildcard)
+              slug.vanda-studio.org → site du photographe
               =========================================
           */}
-          <Route path="/g/:uuid" element={<ClientGalleryView />} />
-
-          {/* =========================================
-              AUTHENTIFICATION
-              =========================================
-          */}
-          <Route path="/auth/login" element={<Login />} />
-          <Route path="/auth/register" element={<SignUp />} />
-
-          {/* =========================================
-              ROUTES ADMIN (Protégées)
-              =========================================
-          */}
-          <Route element={<ProtectedRoute />}>
-            <Route element={<AdminLayout />}>
-              <Route path="/admin/dashboard" element={<AdminDashboard />} />
-              <Route path="/admin/new-delivery" element={<NewDelivery />} />
-              <Route path="/admin/gallery/:uuid" element={<GalleryManagement />} />
-              {/* Le SiteBuilder admin utilise le nouveau wrapper MUI/Admin */}
-              <Route path="/admin/site-builder" element={<SiteBuilder />} />
+          {subdomainType === 'photographer' && photographerSlug && (
+            <Route path="/*" element={<TemplateLayout slug={photographerSlug} />}>
+              <Route index element={<TemplateHome />} />
+              <Route path="portfolio" element={<TemplatePortfolio />} />
+              <Route path="shop" element={<TemplateShop />} />
+              <Route path="contact" element={<TemplateContact />} />
+              <Route path="about" element={<TemplateAbout />} />
             </Route>
-          </Route>
+          )}
 
           {/* =========================================
-              BUILDER STANDALONE (Protégé)
+              ADMIN (app.vanda-studio.org)
+              Accessible aussi en local via /admin/*
               =========================================
-              Route: /builder
-              Wizard de configuration (10 étapes)
           */}
-          <Route element={<ProtectedRoute />}>
-            <Route path="/builder" element={<BuilderApp />} />
-          </Route>
+          {(subdomainType === 'admin' || subdomainType === 'main') && (
+            <>
+              {/* Auth */}
+              <Route path="/auth/login" element={<Login />} />
+              <Route path="/auth/register" element={<SignUp />} />
+              <Route path="/login" element={<Navigate to="/auth/login" replace />} />
+              <Route path="/signup" element={<Navigate to="/auth/register" replace />} />
 
+              {/* Admin protégé */}
+              <Route element={<ProtectedRoute />}>
+                <Route element={<AdminLayout />}>
+                  <Route path="/admin/dashboard" element={<AdminDashboard />} />
+                  <Route path="/admin/new-delivery" element={<NewDelivery />} />
+                  <Route path="/admin/gallery/:uuid" element={<GalleryManagement />} />
+                  <Route path="/admin/site-builder" element={<SiteBuilder />} />
+                </Route>
+              </Route>
+
+              {/* Builder standalone */}
+              <Route element={<ProtectedRoute />}>
+                <Route path="/builder" element={<BuilderApp />} />
+              </Route>
+
+              {/* Galerie client partagée */}
+              <Route path="/g/:uuid" element={<ClientGalleryView />} />
+
+              {/* Redirections */}
+              <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
+            </>
+          )}
 
           {/* =========================================
-              TEMPLATE (Sites Photographes)
+              PAGES PUBLIQUES (vanda-studio.org)
+              Accessible aussi en local
               =========================================
-              :slug = identifiant unique du photographe
           */}
-          <Route path="/:slug" element={<TemplateLayout />}>
-            <Route index element={<TemplateHome />} />
-            <Route path="portfolio" element={<TemplatePortfolio />} />
-            <Route path="shop" element={<TemplateShop />} />
-            <Route path="contact" element={<TemplateContact />} />
-            <Route path="about" element={<TemplateAbout />} />
-          </Route>
+          {subdomainType === 'main' && (
+            <>
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/pricing" element={<PricingPage />} />
 
-          {/* =========================================
-              REDIRECTIONS
-              =========================================
-          */}
-          <Route path="/login" element={<Navigate to="/auth/login" replace />} />
-          <Route path="/signup" element={<Navigate to="/auth/register" replace />} />
-          <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
+              {/* Sites photographes via chemin (fallback dev local) */}
+              <Route path="/:slug" element={<TemplateLayout />}>
+                <Route index element={<TemplateHome />} />
+                <Route path="portfolio" element={<TemplatePortfolio />} />
+                <Route path="shop" element={<TemplateShop />} />
+                <Route path="contact" element={<TemplateContact />} />
+                <Route path="about" element={<TemplateAbout />} />
+              </Route>
+            </>
+          )}
 
           {/* =========================================
               404
@@ -306,6 +309,7 @@ function App() {
               </div>
             }
           />
+
         </Routes>
       </BrowserRouter>
     </ThemeProvider>

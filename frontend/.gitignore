@@ -1,7 +1,12 @@
 node_modules
 dist
+dist-*
 .DS_Store
 *.local
 .env
 .npm
 .cache
+*.zip
+*.backup
+old/
+"new vertion of landing page/"

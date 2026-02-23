@@ -1,260 +1,98 @@
-import React, { useState, useEffect } from 'react';
-import {
-    AppBar,
-    Toolbar,
-    Box,
-    Button,
-    IconButton,
-    Drawer,
-    List,
-    ListItem,
-    ListItemButton,
-    ListItemText,
-    Container,
-} from '@mui/material';
-import { Menu as MenuIcon, Close as CloseIcon } from '@mui/icons-material';
-import { Link as RouterLink, useLocation } from 'react-router-dom';
+import { useState, useEffect } from 'react'
+import { motion } from 'framer-motion'
+import { X, Menu } from 'lucide-react'
 
-const PublicNavbar: React.FC = () => {
-    const [mobileOpen, setMobileOpen] = useState(false);
-    const [scrolled, setScrolled] = useState(false);
-    const location = useLocation();
+export default function PublicNavbar() {
+    const [isScrolled, setIsScrolled] = useState(false)
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+    const ADMIN_URL = import.meta.env.VITE_ADMIN_URL || 'https://app.vanda-studio.org';
 
     useEffect(() => {
         const handleScroll = () => {
-            setScrolled(window.scrollY > 50);
-        };
-
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
-
-    const handleDrawerToggle = () => {
-        setMobileOpen(!mobileOpen);
-    };
-
-    const navItems = [
-        { label: 'Accueil', path: '/' },
-        { label: 'Tarifs', path: '/pricing' },
-    ];
-
-    const drawer = (
-        <Box sx={{ width: 280, height: '100%', backgroundColor: '#0a0a0a', color: 'white' }}>
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', p: 2 }}>
-                <IconButton onClick={handleDrawerToggle} sx={{ color: 'white' }}>
-                    <CloseIcon />
-                </IconButton>
-            </Box>
-            <List>
-                {navItems.map((item) => (
-                    <ListItem key={item.path} disablePadding>
-                        <ListItemButton
-                            component={RouterLink}
-                            to={item.path}
-                            onClick={handleDrawerToggle}
-                            selected={location.pathname === item.path}
-                            sx={{
-                                '&.Mui-selected': {
-                                    backgroundColor: 'rgba(76, 175, 80, 0.1)',
-                                    borderLeft: '3px solid #4caf50',
-                                },
-                            }}
-                        >
-                            <ListItemText primary={item.label} />
-                        </ListItemButton>
-                    </ListItem>
-                ))}
-                <ListItem sx={{ mt: 2 }}>
-                    <Button
-                        component={RouterLink}
-                        to="/auth/login"
-                        fullWidth
-                        variant="outlined"
-                        sx={{
-                            borderColor: 'rgba(255,255,255,0.3)',
-                            color: 'white',
-                            mb: 1,
-                        }}
-                    >
-                        Connexion
-                    </Button>
-                </ListItem>
-                <ListItem>
-                    <Button
-                        component={RouterLink}
-                        to="/auth/register"
-                        fullWidth
-                        variant="contained"
-                        sx={{
-                            backgroundColor: '#4caf50',
-                            color: '#0a0a0a',
-                            fontWeight: 700,
-                            '&:hover': {
-                                backgroundColor: '#388e3c',
-                            },
-                        }}
-                    >
-                        Créer mon site
-                    </Button>
-                </ListItem>
-            </List>
-        </Box>
-    );
+            setIsScrolled(window.scrollY > 50)
+        }
+        window.addEventListener('scroll', handleScroll)
+        return () => window.removeEventListener('scroll', handleScroll)
+    }, [])
 
     return (
-        <>
-            <AppBar
-                position="fixed"
-                elevation={scrolled ? 4 : 0}
-                sx={{
-                    backgroundColor: scrolled ? '#0a0a0a' : 'transparent',
-                    backdropFilter: scrolled ? 'none' : 'blur(10px)',
-                    transition: 'all 0.3s ease',
-                    borderBottom: scrolled ? '1px solid rgba(255,255,255,0.1)' : 'none',
-                }}
-            >
-                <Container maxWidth="lg">
-                    <Toolbar sx={{ justifyContent: 'space-between', py: 1.5 }}>
-                        {/* Logo */}
-                        <Box
-                            component={RouterLink}
-                            to="/"
-                            sx={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                textDecoration: 'none',
-                                color: 'white',
-                            }}
+        <motion.nav
+            initial={{ y: -100 }}
+            animate={{ y: 0 }}
+            transition={{ duration: 0.6, ease: 'easeOut' }}
+            className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'glass-strong' : 'bg-transparent'
+                }`}
+        >
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="flex items-center justify-between h-16">
+                    {/* Logo */}
+                    <a href="/" className="flex items-center gap-2 group">
+                        <span style={{
+                            fontSize: '1.5rem',
+                            fontWeight: 800,
+                            background: 'linear-gradient(135deg, #4caf50 0%, #81c784 100%)',
+                            WebkitBackgroundClip: 'text',
+                            WebkitTextFillColor: 'transparent',
+                            letterSpacing: '-0.5px'
+                        }}>
+                            🞹 VANDA STUDIO
+                        </span>
+                    </a>
+
+                    {/* Desktop Navigation */}
+                    <div className="hidden md:flex items-center gap-8">
+                        <a href="/#features" className="text-sm text-gray-400 hover:text-white transition-colors">Fonctionnalités</a>
+                        <a href="/#how-it-works" className="text-sm text-gray-400 hover:text-white transition-colors">Comment ça marche</a>
+                        <a href="/pricing" className="text-sm text-white font-medium transition-colors">Tarifs</a>
+                        <a href="/#testimonials" className="text-sm text-gray-400 hover:text-white transition-colors">Témoignages</a>
+                    </div>
+
+                    {/* CTAs */}
+                    <div className="hidden md:flex items-center gap-4">
+                        <a href={`${ADMIN_URL}/auth/login`} className="text-sm text-gray-400 hover:text-white transition-colors">
+                            Connexion
+                        </a>
+                        <a
+                            href={`${ADMIN_URL}/auth/register`}
+                            className="bg-green-500 hover:bg-green-600 text-black font-medium px-4 py-2 rounded-lg transition-colors"
                         >
-                            <Box
-                                sx={{
-                                    fontSize: '1.5rem',
-                                    fontWeight: 800,
-                                    background: 'linear-gradient(135deg, #4caf50 0%, #81c784 100%)',
-                                    WebkitBackgroundClip: 'text',
-                                    WebkitTextFillColor: 'transparent',
-                                    letterSpacing: '-0.5px',
-                                }}
-                            >
-                                VANDA STUDIO
-                            </Box>
-                        </Box>
+                            Créer mon site
+                        </a>
+                    </div>
 
-                        {/* Desktop Navigation */}
-                        <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 4 }}>
-                            {navItems.map((item) => (
-                                <Button
-                                    key={item.path}
-                                    component={RouterLink}
-                                    to={item.path}
-                                    sx={{
-                                        color: location.pathname === item.path ? '#4caf50' : 'white',
-                                        fontWeight: 600,
-                                        textTransform: 'none',
-                                        fontSize: '1rem',
-                                        position: 'relative',
-                                        '&:hover': {
-                                            backgroundColor: 'transparent',
-                                            color: '#4caf50',
-                                        },
-                                        '&::after': {
-                                            content: '""',
-                                            position: 'absolute',
-                                            bottom: 0,
-                                            left: '50%',
-                                            transform: 'translateX(-50%)',
-                                            width: location.pathname === item.path ? '100%' : '0%',
-                                            height: '2px',
-                                            backgroundColor: '#4caf50',
-                                            transition: 'width 0.3s ease',
-                                        },
-                                        '&:hover::after': {
-                                            width: '100%',
-                                        },
-                                    }}
-                                >
-                                    {item.label}
-                                </Button>
-                            ))}
+                    {/* Mobile Menu Button */}
+                    <button
+                        className="md:hidden text-white"
+                        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                    >
+                        {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                    </button>
+                </div>
 
-                            <Button
-                                component={RouterLink}
-                                to="/auth/login"
-                                variant="outlined"
-                                sx={{
-                                    borderColor: 'rgba(255,255,255,0.3)',
-                                    color: 'white',
-                                    fontWeight: 600,
-                                    textTransform: 'none',
-                                    '&:hover': {
-                                        borderColor: '#4caf50',
-                                        backgroundColor: 'rgba(76, 175, 80, 0.05)',
-                                    },
-                                }}
-                            >
-                                Connexion
-                            </Button>
-
-                            <Button
-                                component={RouterLink}
-                                to="/auth/register"
-                                variant="contained"
-                                sx={{
-                                    backgroundColor: '#4caf50',
-                                    color: '#0a0a0a',
-                                    fontWeight: 700,
-                                    textTransform: 'none',
-                                    px: 3,
-                                    '&:hover': {
-                                        backgroundColor: '#388e3c',
-                                        transform: 'translateY(-2px)',
-                                        boxShadow: '0 4px 12px rgba(76, 175, 80, 0.3)',
-                                    },
-                                    transition: 'all 0.3s ease',
-                                }}
+                {/* Mobile Menu */}
+                {isMobileMenuOpen && (
+                    <motion.div
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="md:hidden glass-strong rounded-xl mt-2 p-4"
+                    >
+                        <div className="flex flex-col gap-4">
+                            <a href="/#features" className="text-gray-400 hover:text-white transition-colors">Fonctionnalités</a>
+                            <a href="/#how-it-works" className="text-gray-400 hover:text-white transition-colors">Comment ça marche</a>
+                            <a href="/pricing" className="text-white font-medium transition-colors">Tarifs</a>
+                            <a href="/#testimonials" className="text-gray-400 hover:text-white transition-colors">Témoignages</a>
+                            <hr className="border-white/10" />
+                            <a href={`${ADMIN_URL}/auth/login`} className="text-gray-400 hover:text-white transition-colors">Connexion</a>
+                            <a
+                                href={`${ADMIN_URL}/auth/register`}
+                                className="bg-green-500 hover:bg-green-600 text-black font-medium px-4 py-2 rounded-lg text-center transition-colors"
                             >
                                 Créer mon site
-                            </Button>
-                        </Box>
-
-                        {/* Mobile menu button */}
-                        <IconButton
-                            color="inherit"
-                            aria-label="open drawer"
-                            edge="start"
-                            onClick={handleDrawerToggle}
-                            sx={{ display: { md: 'none' } }}
-                        >
-                            <MenuIcon />
-                        </IconButton>
-                    </Toolbar>
-                </Container>
-            </AppBar>
-
-            {/* Mobile drawer */}
-            <Drawer
-                variant="temporary"
-                anchor="right"
-                open={mobileOpen}
-                onClose={handleDrawerToggle}
-                ModalProps={{
-                    keepMounted: true,
-                }}
-                sx={{
-                    display: { xs: 'block', md: 'none' },
-                    '& .MuiDrawer-paper': {
-                        boxSizing: 'border-box',
-                        width: 280,
-                    },
-                }}
-            >
-                {drawer}
-            </Drawer>
-
-            {/* Spacer to prevent content from going under fixed navbar */}
-            <Toolbar sx={{ mb: 2 }} />
-        </>
-    );
-};
-
-export default PublicNavbar;
+                            </a>
+                        </div>
+                    </motion.div>
+                )}
+            </div>
+        </motion.nav>
+    )
+}

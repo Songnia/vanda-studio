@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../../services/authService';
 import { galleryService } from '../../services/galleryService';
+import { siteConfigService } from '../../services/siteConfigService';
+import { getSiteUrl, getSiteTarget } from '@/utils/siteUrl';
 import type { Gallery } from '../../types/gallery';
 import {
     Table,
@@ -13,7 +15,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Eye, Trash2, Share2, Search, Star, Plus, Youtube, Users, MessageSquare, MessageCircle, Heart, Globe } from 'lucide-react';
+import { Eye, Trash2, Share2, Search, Plus, Youtube, Users, MessageSquare, MessageCircle, Heart, Copy, ExternalLink, Check } from 'lucide-react';
 import { Input } from "@/components/ui/input";
 import ShareDialog from '../../components/Delivery/ShareDialog';
 import { usePlanLimits } from '@/hooks/usePlanLimits';
@@ -26,15 +28,21 @@ const AdminDashboard: React.FC = () => {
     const [shareDialogOpen, setShareDialogOpen] = useState(false);
     const [shareUuid, setShareUuid] = useState('');
     const [user, setUser] = useState<any>(null);
+    const [siteSlug, setSiteSlug] = useState<string | null>(null);
+    const [copied, setCopied] = useState(false);
 
     // Plan limits
-    const { checkLimit, limits, currentPlan } = usePlanLimits();
+    const { checkLimit, currentPlan } = usePlanLimits();
     const [upgradeDialogOpen, setUpgradeDialogOpen] = useState(false);
     const [upgradeFeature, setUpgradeFeature] = useState<'photos' | 'galleries' | 'domain' | 'branding'>('galleries');
 
     useEffect(() => {
         setUser(authService.getCurrentUser());
         loadGalleries();
+        // Load site slug
+        siteConfigService.getMyConfigs().then(configs => {
+            if (configs.length > 0) setSiteSlug(configs[0].slug);
+        }).catch(() => { });
     }, []);
 
     const loadGalleries = async () => {
@@ -60,6 +68,15 @@ const AdminDashboard: React.FC = () => {
     const handleShare = (uuid: string) => {
         setShareUuid(uuid);
         setShareDialogOpen(true);
+    };
+
+    const handleCopyLink = () => {
+        if (!siteSlug) return;
+        const url = getSiteUrl(siteSlug);
+        const fullUrl = url.startsWith('http') ? url : `${window.location.origin}${url}`;
+        navigator.clipboard.writeText(fullUrl);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
     };
 
     const getGreeting = () => {
@@ -124,6 +141,38 @@ const AdminDashboard: React.FC = () => {
                     <span className="text-lg">🎉</span>
                     La journée est bien partie. Que diriez-vous d'une nouvelle promotion ?
                 </p>
+
+                {/* Site Link Actions */}
+                {siteSlug && (
+                    <div className="flex items-center gap-2 mt-4">
+                        <a
+                            href={getSiteUrl(siteSlug)}
+                            target={getSiteTarget(siteSlug)}
+                            rel="noopener noreferrer"
+                        >
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="gap-2 rounded-full border-slate-200 text-slate-700 hover:border-green-400 hover:text-green-600"
+                            >
+                                <ExternalLink className="w-4 h-4" />
+                                Voir le site
+                            </Button>
+                        </a>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            className={`gap-2 rounded-full transition-colors ${copied
+                                    ? 'border-green-400 text-green-600 bg-green-50'
+                                    : 'border-slate-200 text-slate-700 hover:border-green-400 hover:text-green-600'
+                                }`}
+                            onClick={handleCopyLink}
+                        >
+                            {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                            {copied ? 'Lien copié !' : 'Copier le lien'}
+                        </Button>
+                    </div>
+                )}
             </div>
 
             {/* Quick Actions & Toolbar */}

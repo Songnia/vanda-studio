@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
-import { Switch } from '@/components/ui/switch';
 import type { SiteConfig } from '@/types/builder';
 
 interface ContactStepProps {
@@ -24,8 +23,6 @@ export function ContactStep({ config, onUpdate, onNext, onPrev }: ContactStepPro
     socials: config.socials
   });
 
-  const [showMap, setShowMap] = useState(true);
-  const [showForm, setShowForm] = useState(true);
 
   const handleChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -241,7 +238,7 @@ export function ContactStep({ config, onUpdate, onNext, onPrev }: ContactStepPro
         <Button variant="outline" onClick={onPrev}>
           Retour
         </Button>
-        <Button 
+        <Button
           onClick={handleSubmit}
           disabled={!formData.email}
           className="bg-green-500 hover:bg-green-600 text-black"

@@ -1,236 +1,88 @@
-import React from 'react';
-import { Box, Container, Grid, Typography, Link, IconButton, Divider } from '@mui/material';
-import { Facebook, Instagram, Twitter, LinkedIn } from '@mui/icons-material';
-import { Link as RouterLink } from 'react-router-dom';
+import { Globe } from 'lucide-react'
 
-const PublicFooter: React.FC = () => {
-    const currentYear = new Date().getFullYear();
-
-    const footerLinks = {
-        navigation: [
-            { label: 'Accueil', path: '/' },
-            { label: 'Tarifs', path: '/pricing' },
-            { label: 'À propos', path: '/about' },
+export default function PublicFooter() {
+    const links = {
+        Product: [
+            { label: 'Fonctionnalités', href: '#features' },
+            { label: 'Tarifs', href: '#pricing' },
+            { label: 'Démo', href: '#' },
+            { label: 'Changelog', href: '#' },
         ],
-        legal: [
-            { label: 'Politique de confidentialité', path: '/privacy' },
-            { label: 'Conditions d\'utilisation', path: '/terms' },
-            { label: 'Mentions légales', path: '/legal' },
+        Resources: [
+            { label: 'Centre d\'aide', href: '#' },
+            { label: 'Documentation', href: '#' },
+            { label: 'Blog', href: '#' },
+            { label: 'Roadmap', href: '#' },
         ],
-        support: [
-            { label: 'Centre d\'aide', path: '/help' },
-            { label: 'Documentation', path: '/docs' },
-            { label: 'Contact', path: '/contact' },
+        Company: [
+            { label: 'À propos', href: '#' },
+            { label: 'Carrières', href: '#' },
+            { label: 'Contact', href: '#' },
+            { label: 'Presse', href: '#' },
         ],
-    };
-
-    const socialLinks = [
-        { icon: <Facebook />, url: 'https://facebook.com', label: 'Facebook' },
-        { icon: <Instagram />, url: 'https://instagram.com', label: 'Instagram' },
-        { icon: <Twitter />, url: 'https://twitter.com', label: 'Twitter' },
-        { icon: <LinkedIn />, url: 'https://linkedin.com', label: 'LinkedIn' },
-    ];
+        Legal: [
+            { label: 'Confidentialité', href: '#' },
+            { label: 'Conditions', href: '#' },
+            { label: 'CGV', href: '#' },
+            { label: 'Mentions légales', href: '#' },
+        ],
+    }
 
     return (
-        <Box
-            component="footer"
-            sx={{
-                backgroundColor: '#0a0a0a',
-                borderTop: '1px solid rgba(255,255,255,0.1)',
-                pt: 8,
-                pb: 4,
-            }}
-        >
-            <Container maxWidth="lg">
-                <Grid container spacing={4}>
-                    {/* À propos */}
-                    <Grid size={{ xs: 12, md: 4 }}>
-                        <Box sx={{ mb: 3 }}>
-                            <Typography
-                                variant="h6"
-                                sx={{
-                                    fontWeight: 800,
-                                    background: 'linear-gradient(135deg, #4caf50 0%, #81c784 100%)',
-                                    WebkitBackgroundClip: 'text',
-                                    WebkitTextFillColor: 'transparent',
-                                    mb: 2,
-                                }}
-                            >
-                                VANDA STUDIO
-                            </Typography>
-                            <Typography sx={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.95rem', lineHeight: 1.8 }}>
-                                La plateforme tout-en-un pour créer votre site de photographe professionnel et livrer vos galeries clients.
-                            </Typography>
-                        </Box>
-
-                        {/* Réseaux sociaux */}
-                        <Box sx={{ display: 'flex', gap: 1 }}>
-                            {socialLinks.map((social) => (
-                                <IconButton
-                                    key={social.label}
-                                    component="a"
-                                    href={social.url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    aria-label={social.label}
-                                    sx={{
-                                        color: 'rgba(255,255,255,0.6)',
-                                        '&:hover': {
-                                            color: '#4caf50',
-                                            backgroundColor: 'rgba(76, 175, 80, 0.1)',
-                                        },
-                                        transition: 'all 0.3s ease',
-                                    }}
+        <footer className="py-16 border-t border-white/5">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
+                    {/* Logo & Description */}
+                    <div className="col-span-2">
+                        <a href="/" className="flex items-center gap-2 mb-4">
+                            <span className="font-semibold text-white">🞹 VANDA STUDIO</span>
+                        </a>
+                        <p className="text-gray-400 text-sm mb-4 max-w-xs">
+                            La plateforme tout-en-un pour créer votre site de photographe professionnel
+                            et livrer vos galeries clients.
+                        </p>
+                        <div className="flex gap-4">
+                            {['twitter', 'instagram', 'linkedin', 'youtube'].map((social) => (
+                                <a
+                                    key={social}
+                                    href="#"
+                                    className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors"
                                 >
-                                    {social.icon}
-                                </IconButton>
+                                    <Globe className="w-4 h-4 text-gray-400" />
+                                </a>
                             ))}
-                        </Box>
-                    </Grid>
+                        </div>
+                    </div>
 
-                    {/* Navigation */}
-                    <Grid size={{ xs: 12, sm: 4, md: 2 }}>
-                        <Typography
-                            variant="h6"
-                            sx={{
-                                color: 'white',
-                                fontWeight: 700,
-                                fontSize: '1rem',
-                                mb: 2,
-                            }}
-                        >
-                            Navigation
-                        </Typography>
-                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-                            {footerLinks.navigation.map((link) => (
-                                <Link
-                                    key={link.path}
-                                    component={RouterLink}
-                                    to={link.path}
-                                    sx={{
-                                        color: 'rgba(255,255,255,0.7)',
-                                        textDecoration: 'none',
-                                        fontSize: '0.9rem',
-                                        '&:hover': {
-                                            color: '#4caf50',
-                                        },
-                                        transition: 'color 0.3s ease',
-                                    }}
-                                >
-                                    {link.label}
-                                </Link>
-                            ))}
-                        </Box>
-                    </Grid>
+                    {/* Links */}
+                    {Object.entries(links).map(([category, items]) => (
+                        <div key={category}>
+                            <h4 className="text-white font-medium mb-4">{category}</h4>
+                            <ul className="space-y-2">
+                                {items.map((item) => (
+                                    <li key={item.label}>
+                                        <a
+                                            href={item.href}
+                                            className="text-sm text-gray-400 hover:text-white transition-colors"
+                                        >
+                                            {item.label}
+                                        </a>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    ))}
+                </div>
 
-                    {/* Support */}
-                    <Grid size={{ xs: 12, sm: 4, md: 3 }}>
-                        <Typography
-                            variant="h6"
-                            sx={{
-                                color: 'white',
-                                fontWeight: 700,
-                                fontSize: '1rem',
-                                mb: 2,
-                            }}
-                        >
-                            Support
-                        </Typography>
-                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-                            {footerLinks.support.map((link) => (
-                                <Link
-                                    key={link.path}
-                                    component={RouterLink}
-                                    to={link.path}
-                                    sx={{
-                                        color: 'rgba(255,255,255,0.7)',
-                                        textDecoration: 'none',
-                                        fontSize: '0.9rem',
-                                        '&:hover': {
-                                            color: '#4caf50',
-                                        },
-                                        transition: 'color 0.3s ease',
-                                    }}
-                                >
-                                    {link.label}
-                                </Link>
-                            ))}
-                            <Link
-                                href="mailto:support@vandastudio.com"
-                                sx={{
-                                    color: 'rgba(255,255,255,0.7)',
-                                    textDecoration: 'none',
-                                    fontSize: '0.9rem',
-                                    '&:hover': {
-                                        color: '#4caf50',
-                                    },
-                                    transition: 'color 0.3s ease',
-                                }}
-                            >
-                                support@vandastudio.com
-                            </Link>
-                        </Box>
-                    </Grid>
-
-                    {/* Légal */}
-                    <Grid size={{ xs: 12, sm: 4, md: 3 }}>
-                        <Typography
-                            variant="h6"
-                            sx={{
-                                color: 'white',
-                                fontWeight: 700,
-                                fontSize: '1rem',
-                                mb: 2,
-                            }}
-                        >
-                            Légal
-                        </Typography>
-                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-                            {footerLinks.legal.map((link) => (
-                                <Link
-                                    key={link.path}
-                                    component={RouterLink}
-                                    to={link.path}
-                                    sx={{
-                                        color: 'rgba(255,255,255,0.7)',
-                                        textDecoration: 'none',
-                                        fontSize: '0.9rem',
-                                        '&:hover': {
-                                            color: '#4caf50',
-                                        },
-                                        transition: 'color 0.3s ease',
-                                    }}
-                                >
-                                    {link.label}
-                                </Link>
-                            ))}
-                        </Box>
-                    </Grid>
-                </Grid>
-
-                {/* Divider */}
-                <Divider sx={{ my: 4, borderColor: 'rgba(255,255,255,0.1)' }} />
-
-                {/* Copyright */}
-                <Box
-                    sx={{
-                        display: 'flex',
-                        flexDirection: { xs: 'column', sm: 'row' },
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        gap: 2,
-                    }}
-                >
-                    <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem' }}>
-                        © {currentYear} VANDA STUDIO. Tous droits réservés.
-                    </Typography>
-                    <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem' }}>
+                <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4">
+                    <p className="text-sm text-gray-500">
+                        © 2026 VANDA STUDIO. Tous droits réservés.
+                    </p>
+                    <p className="text-sm text-gray-500">
                         Fait avec ❤️ pour les photographes
-                    </Typography>
-                </Box>
-            </Container>
-        </Box>
-    );
-};
-
-export default PublicFooter;
+                    </p>
+                </div>
+            </div>
+        </footer>
+    )
+}

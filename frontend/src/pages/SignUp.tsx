@@ -21,6 +21,8 @@ import {
 } from '@mui/icons-material';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { authService } from '../services/authService';
+import PublicNavbar from '../components/Layout/PublicNavbar';
+import PublicFooter from '../components/Layout/PublicFooter';
 
 const SignUp: React.FC = () => {
     const navigate = useNavigate();
@@ -59,119 +61,188 @@ const SignUp: React.FC = () => {
     };
 
     return (
-        <Container maxWidth="sm">
-            <Box sx={{ mt: 8, mb: 4, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                <Paper elevation={0} sx={{ p: 4, width: '100%', borderRadius: 4, border: '1px solid', borderColor: 'divider' }}>
-                    <Typography variant="h4" component="h1" gutterBottom align="center" sx={{ fontWeight: 700 }}>
-                        Inscription
-                    </Typography>
-                    <Typography variant="body1" color="text.secondary" align="center" sx={{ mb: 4 }}>
-                        Rejoignez l'aventure Ultimate Studio
-                    </Typography>
-
-                    {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
-
-                    <form onSubmit={handleSubmit}>
-                        <TextField
-                            fullWidth
-                            label="Nom complet"
-                            variant="outlined"
-                            margin="normal"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            required
-                            InputProps={{
-                                startAdornment: (
-                                    <InputAdornment position="start">
-                                        <PersonIcon color="action" />
-                                    </InputAdornment>
-                                ),
+        <div className="min-h-screen bg-background text-foreground linear-theme font-sans flex flex-col">
+            <PublicNavbar />
+            <div className="flex-grow flex items-center justify-center py-20">
+                <Container maxWidth="sm">
+                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        <Paper
+                            elevation={0}
+                            className="glass"
+                            sx={{
+                                p: 4,
+                                width: '100%',
+                                borderRadius: 4,
+                                bgcolor: 'transparent',
+                                color: 'white'
                             }}
-                        />
-                        <TextField
-                            fullWidth
-                            label="Email"
-                            variant="outlined"
-                            margin="normal"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                            InputProps={{
-                                startAdornment: (
-                                    <InputAdornment position="start">
-                                        <EmailIcon color="action" />
-                                    </InputAdornment>
-                                ),
-                            }}
-                        />
-                        <TextField
-                            fullWidth
-                            label="Mot de passe"
-                            type={showPassword ? 'text' : 'password'}
-                            variant="outlined"
-                            margin="normal"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                            InputProps={{
-                                startAdornment: (
-                                    <InputAdornment position="start">
-                                        <LockIcon color="action" />
-                                    </InputAdornment>
-                                ),
-                                endAdornment: (
-                                    <InputAdornment position="end">
-                                        <IconButton
-                                            onClick={() => setShowPassword(!showPassword)}
-                                            edge="end"
-                                        >
-                                            {showPassword ? <VisibilityOff /> : <Visibility />}
-                                        </IconButton>
-                                    </InputAdornment>
-                                )
-                            }}
-                        />
-                        <TextField
-                            fullWidth
-                            label="Confirmer le mot de passe"
-                            type={showPassword ? 'text' : 'password'}
-                            variant="outlined"
-                            margin="normal"
-                            value={passwordConfirmation}
-                            onChange={(e) => setPasswordConfirmation(e.target.value)}
-                            required
-                            InputProps={{
-                                startAdornment: (
-                                    <InputAdornment position="start">
-                                        <LockIcon color="action" />
-                                    </InputAdornment>
-                                ),
-                            }}
-                        />
-
-                        <Button
-                            fullWidth
-                            type="submit"
-                            variant="contained"
-                            size="large"
-                            disabled={loading}
-                            sx={{ mt: 4, mb: 2, py: 1.5, borderRadius: 2, fontWeight: 600 }}
                         >
-                            {loading ? <CircularProgress size={24} color="inherit" /> : 'S\'inscrire'}
-                        </Button>
-
-                        <Box sx={{ mt: 2, textAlign: 'center' }}>
-                            <Typography variant="body2">
-                                Vous avez déjà un compte ?{' '}
-                                <Link component={RouterLink} to="/login" sx={{ fontWeight: 600 }}>
-                                    Connectez-vous
-                                </Link>
+                            <Typography variant="h4" component="h1" gutterBottom align="center" sx={{ fontWeight: 700, color: 'white' }}>
+                                Inscription
                             </Typography>
-                        </Box>
-                    </form>
-                </Paper>
-            </Box>
-        </Container>
+                            <Typography variant="body1" align="center" sx={{ mb: 4, color: 'rgba(255,255,255,0.7)' }}>
+                                Rejoignez l'aventure Ultimate Studio
+                            </Typography>
+
+                            {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
+
+                            <form onSubmit={handleSubmit}>
+                                <TextField
+                                    fullWidth
+                                    label="Nom complet"
+                                    variant="outlined"
+                                    margin="normal"
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
+                                    required
+                                    sx={{
+                                        '& .MuiOutlinedInput-root': {
+                                            color: 'white',
+                                            '& fieldset': { borderColor: 'rgba(255,255,255,0.2)' },
+                                            '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.4)' },
+                                            '&.Mui-focused fieldset': { borderColor: '#4caf50' },
+                                        },
+                                        '& .MuiInputLabel-root': { color: 'rgba(255,255,255,0.7)' },
+                                        '& .MuiInputLabel-root.Mui-focused': { color: '#4caf50' },
+                                        '& .MuiInputAdornment-root .MuiSvgIcon-root': { color: 'rgba(255,255,255,0.7)' },
+                                    }}
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <PersonIcon />
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                />
+                                <TextField
+                                    fullWidth
+                                    label="Email"
+                                    variant="outlined"
+                                    margin="normal"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    required
+                                    sx={{
+                                        '& .MuiOutlinedInput-root': {
+                                            color: 'white',
+                                            '& fieldset': { borderColor: 'rgba(255,255,255,0.2)' },
+                                            '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.4)' },
+                                            '&.Mui-focused fieldset': { borderColor: '#4caf50' },
+                                        },
+                                        '& .MuiInputLabel-root': { color: 'rgba(255,255,255,0.7)' },
+                                        '& .MuiInputLabel-root.Mui-focused': { color: '#4caf50' },
+                                        '& .MuiInputAdornment-root .MuiSvgIcon-root': { color: 'rgba(255,255,255,0.7)' },
+                                    }}
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <EmailIcon />
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                />
+                                <TextField
+                                    fullWidth
+                                    label="Mot de passe"
+                                    type={showPassword ? 'text' : 'password'}
+                                    variant="outlined"
+                                    margin="normal"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    required
+                                    sx={{
+                                        '& .MuiOutlinedInput-root': {
+                                            color: 'white',
+                                            '& fieldset': { borderColor: 'rgba(255,255,255,0.2)' },
+                                            '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.4)' },
+                                            '&.Mui-focused fieldset': { borderColor: '#4caf50' },
+                                        },
+                                        '& .MuiInputLabel-root': { color: 'rgba(255,255,255,0.7)' },
+                                        '& .MuiInputLabel-root.Mui-focused': { color: '#4caf50' },
+                                        '& .MuiInputAdornment-root .MuiSvgIcon-root': { color: 'rgba(255,255,255,0.7)' },
+                                    }}
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <LockIcon />
+                                            </InputAdornment>
+                                        ),
+                                        endAdornment: (
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    onClick={() => setShowPassword(!showPassword)}
+                                                    edge="end"
+                                                    sx={{ color: 'rgba(255,255,255,0.7)' }}
+                                                >
+                                                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                </IconButton>
+                                            </InputAdornment>
+                                        )
+                                    }}
+                                />
+                                <TextField
+                                    fullWidth
+                                    label="Confirmer le mot de passe"
+                                    type={showPassword ? 'text' : 'password'}
+                                    variant="outlined"
+                                    margin="normal"
+                                    value={passwordConfirmation}
+                                    onChange={(e) => setPasswordConfirmation(e.target.value)}
+                                    required
+                                    sx={{
+                                        '& .MuiOutlinedInput-root': {
+                                            color: 'white',
+                                            '& fieldset': { borderColor: 'rgba(255,255,255,0.2)' },
+                                            '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.4)' },
+                                            '&.Mui-focused fieldset': { borderColor: '#4caf50' },
+                                        },
+                                        '& .MuiInputLabel-root': { color: 'rgba(255,255,255,0.7)' },
+                                        '& .MuiInputLabel-root.Mui-focused': { color: '#4caf50' },
+                                        '& .MuiInputAdornment-root .MuiSvgIcon-root': { color: 'rgba(255,255,255,0.7)' },
+                                    }}
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <LockIcon />
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                />
+
+                                <Button
+                                    fullWidth
+                                    type="submit"
+                                    variant="contained"
+                                    size="large"
+                                    disabled={loading}
+                                    sx={{
+                                        mt: 4,
+                                        mb: 2,
+                                        py: 1.5,
+                                        borderRadius: 2,
+                                        fontWeight: 600,
+                                        bgcolor: '#4caf50',
+                                        '&:hover': { bgcolor: '#43a047' }
+                                    }}
+                                >
+                                    {loading ? <CircularProgress size={24} color="inherit" /> : 'S\'inscrire'}
+                                </Button>
+
+                                <Box sx={{ mt: 2, textAlign: 'center' }}>
+                                    <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.7)' }}>
+                                        Vous avez déjà un compte ?{' '}
+                                        <Link component={RouterLink} to="/login" sx={{ fontWeight: 600, color: '#4caf50' }}>
+                                            Connectez-vous
+                                        </Link>
+                                    </Typography>
+                                </Box>
+                            </form>
+                        </Paper>
+                    </Box>
+                </Container>
+            </div>
+            <PublicFooter />
+        </div>
     );
 };
 
