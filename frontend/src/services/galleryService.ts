@@ -78,6 +78,13 @@ export const galleryService = {
         return mapGalleryFromApi(response.data);
     },
 
+    // Upload ZIP to existing gallery (Admin)
+    uploadZipToGallery: async (id: string, zipFile: File): Promise<void> => {
+        const formData = new FormData();
+        formData.append('zip_file', zipFile);
+        await api.post(`/admin/galleries/${id}/zip`, formData);
+    },
+
     // Delete photo from gallery (Admin)
     deletePhotoFromGallery: async (galleryId: string, photoId: string): Promise<void> => {
         await api.delete(`/admin/galleries/${galleryId}/photos/${photoId}`);

@@ -13,16 +13,16 @@ interface PlanLimits {
 
 const PLAN_LIMITS: Record<PlanType, PlanLimits> = {
     starter: {
-        maxPhotos: 20,
-        maxGalleries: 4,
-        maxPages: 5,
-        canCustomDomain: false,
-        canRemoveBranding: false,
-        storageGB: 0.5, // 500 MB
+        maxPhotos: Infinity,
+        maxGalleries: Infinity,
+        maxPages: Infinity,
+        canCustomDomain: true,
+        canRemoveBranding: true,
+        storageGB: 500, // 50Go
     },
     pro: {
-        maxPhotos: 500,
-        maxGalleries: 20,
+        maxPhotos: Infinity,
+        maxGalleries: Infinity,
         maxPages: Infinity,
         canCustomDomain: true,
         canRemoveBranding: true,

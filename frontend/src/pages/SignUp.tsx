@@ -81,7 +81,7 @@ const SignUp: React.FC = () => {
                                 Inscription
                             </Typography>
                             <Typography variant="body1" align="center" sx={{ mb: 4, color: 'rgba(255,255,255,0.7)' }}>
-                                Rejoignez l'aventure Ultimate Studio
+                                Rejoignez l'aventure VANDA STUDIO
                             </Typography>
 
                             {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}

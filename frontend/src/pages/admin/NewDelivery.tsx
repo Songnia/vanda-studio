@@ -32,6 +32,7 @@ const NewDelivery: React.FC = () => {
     const [zipProgress, setZipProgress] = useState(0);
     const [imagesUploading, setImagesUploading] = useState(false);
     const [imagesProgress, setImagesProgress] = useState(0);
+    const [uploadStatus, setUploadStatus] = useState('');
 
     const handleImagesSelected = (files: File[]) => {
         setImages(files);
@@ -69,6 +70,8 @@ const NewDelivery: React.FC = () => {
         }
     };
 
+    const BATCH_SIZE = 5; // Upload 5 images at a time to stay under server limits
+
     const handleSave = async () => {
         if (!title.trim()) {
             setSnackbarMessage('Veuillez entrer un titre');
@@ -83,60 +86,56 @@ const NewDelivery: React.FC = () => {
         }
 
         setUploading(true);
+        setUploadStatus('Création de la galerie...');
 
-        // Simulate upload delay
-        // setTimeout(async () => { // Removed timeout for real API call
         try {
-            // Create mock image URLs (In production, these would be uploaded to a server)
-            // For now we are just passing metadata, file upload logic needs to be in service or here
-            // The service expects CreateGalleryData which has images as objects, but we have Files.
-            // We need to adapt this. For now, let's assume the service handles FormData creation.
-
-            // Ideally we should upload files here or pass them to service.
-            // The current service implementation expects CreateGalleryData.
-            // Let's look at service implementation again.
-            // Service creates FormData. But it expects data.images to be objects.
-            // We need to refactor service or this call.
-
-            // For this specific fix, I will just await the call and assume service handles it or we fix service later.
-            // But wait, the service implementation I wrote earlier:
-            // formData.append('title', data.title);
-            // ...
-            // It doesn't handle 'images' array in FormData yet!
-
-            // Let's first fix the async call here, then I might need to revisit service for file upload.
-            // But the immediate crash is due to missing await.
-
-            const mockImages: Omit<GalleryImage, 'isLiked'>[] = images.map((file, index) => ({
-                id: `img-${Date.now()}-${index}`,
-                filename: file.name,
-                url: URL.createObjectURL(file),
-            }));
-
-            const mockZipUrl = zipFile ? URL.createObjectURL(zipFile) : '#';
-            const zipSize = zipFile ? `${(zipFile.size / (1024 * 1024)).toFixed(2)} MB` : '0 MB';
-
+            // Step 1: Create gallery with no photos (just metadata)
             const newGallery = await galleryService.createGallery({
                 title,
                 description,
-                images: mockImages,
-                files: images,
-                zipFileUrl: mockZipUrl,
-                zipFileSize: zipSize,
-                zipFileBlob: zipFile || undefined,
-                pin: '1234' // Default PIN for now
+                images: [],
+                files: [],
+                zipFileUrl: '#',
+                zipFileSize: '0',
+                pin: '1234'
             });
 
-            setCreatedUuid(newGallery.uuid);
+            const galleryUuid = newGallery.uuid;
+
+            // Step 2: Upload images in batches
+            const totalBatches = Math.ceil(images.length / BATCH_SIZE);
+            for (let i = 0; i < images.length; i += BATCH_SIZE) {
+                const batch = images.slice(i, i + BATCH_SIZE);
+                const batchNumber = Math.floor(i / BATCH_SIZE) + 1;
+                setUploadStatus(`Upload photos: lot ${batchNumber}/${totalBatches} (${Math.min(i + BATCH_SIZE, images.length)}/${images.length})...`);
+                setImagesProgress(Math.round((batchNumber / totalBatches) * 100));
+                await galleryService.addPhotosToGallery(galleryUuid, batch);
+            }
+            setImagesProgress(100);
+
+            // Step 3: Upload ZIP if provided (non-blocking)
+            if (zipFile) {
+                setUploadStatus('Upload du fichier ZIP...');
+                try {
+                    await galleryService.uploadZipToGallery(galleryUuid, zipFile);
+                } catch (zipError) {
+                    console.warn('ZIP upload failed (non-blocking):', zipError);
+                    setSnackbarMessage(`Galerie créée avec succès ! Mais le ZIP (${(zipFile.size / (1024 * 1024)).toFixed(1)} Mo) n'a pas pu être uploadé (taille trop grande). Vous pouvez le re-télécharger plus tard.`);
+                    setSnackbarOpen(true);
+                }
+            }
+
+            setCreatedUuid(galleryUuid);
             setUploading(false);
+            setUploadStatus('');
             setShareDialogOpen(true);
         } catch (error) {
             console.error("Failed to create gallery", error);
             setSnackbarMessage('Erreur lors de la création de la galerie');
             setSnackbarOpen(true);
             setUploading(false);
+            setUploadStatus('');
         }
-        // }, 1500);
     };
 
     const handleDialogClose = () => {
@@ -209,7 +208,7 @@ const NewDelivery: React.FC = () => {
                     </Box>
 
                     {/* Upload Zone B - ZIP */}
-                    <Box>
+                    {/*<Box>
                         <DualUploadZone
                             title="Zone B: Fichier ZIP (optionnel)"
                             subtitle="Package haute résolution pour téléchargement (format ZIP)"
@@ -224,27 +223,34 @@ const NewDelivery: React.FC = () => {
                                 {zipFile.name} ({(zipFile.size / (1024 * 1024)).toFixed(2)} MB)
                             </Typography>
                         )}
-                    </Box>
+                    </Box>*/}
 
                     {/* Actions */}
-                    <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
-                        <Button
-                            variant="outlined"
-                            onClick={() => navigate('/admin/dashboard')}
-                            disabled={uploading}
-                        >
-                            Annuler
-                        </Button>
-                        <Button
-                            type="submit"
-                            variant="contained"
-                            color="primary"
-                            startIcon={<SaveIcon />}
-                            disabled={uploading}
-                            sx={{ fontWeight: 'bold' }}
-                        >
-                            {uploading ? 'Enregistrement...' : 'Enregistrer & Partager'}
-                        </Button>
+                    <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end', flexDirection: 'column', alignItems: 'flex-end' }}>
+                        {uploading && uploadStatus && (
+                            <Typography variant="caption" color="text.secondary" sx={{ alignSelf: 'flex-start' }}>
+                                {uploadStatus}
+                            </Typography>
+                        )}
+                        <Box sx={{ display: 'flex', gap: 2 }}>
+                            <Button
+                                variant="outlined"
+                                onClick={() => navigate('/admin/dashboard')}
+                                disabled={uploading}
+                            >
+                                Annuler
+                            </Button>
+                            <Button
+                                type="submit"
+                                variant="contained"
+                                color="primary"
+                                startIcon={<SaveIcon />}
+                                disabled={uploading}
+                                sx={{ fontWeight: 'bold' }}
+                            >
+                                {uploading ? `En cours... (${imagesProgress}%)` : 'Enregistrer & Partager'}
+                            </Button>
+                        </Box>
                     </Box>
                 </Stack>
             </Box>

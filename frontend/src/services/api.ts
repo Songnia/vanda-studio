@@ -19,3 +19,15 @@ api.interceptors.request.use((config) => {
     }
     return config;
 });
+
+// Intercepteur pour gérer les erreurs de réponse
+api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        if (error.response?.status === 422) {
+            console.error('Validation errors:', error.response.data);
+            alert(JSON.stringify(error.response.data.errors, null, 2));
+        }
+        return Promise.reject(error);
+    }
+);

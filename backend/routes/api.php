@@ -19,6 +19,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('galleries', AdminGalleryController::class);
         Route::post('galleries/{id}/photos', [AdminGalleryController::class, 'addPhotos']);
         Route::delete('galleries/{id}/photos/{photoId}', [AdminGalleryController::class, 'deletePhoto']);
+        Route::post('galleries/{id}/zip', [AdminGalleryController::class, 'uploadZip']);
     });
 
     // Site Configuration Routes (Protected)

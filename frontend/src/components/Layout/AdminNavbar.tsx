@@ -4,7 +4,8 @@ import {
     ArrowLeft,
     Search,
     Copy,
-    Store,
+    ExternalLink,
+    Check,
     LogOut,
     User,
     HelpCircle,
@@ -24,6 +25,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { authService } from '../../services/authService';
 import { siteConfigService } from '../../services/siteConfigService';
+import { getSiteUrl, getSiteTarget } from '@/utils/siteUrl';
 
 export function AdminNavbar() {
     const navigate = useNavigate();
@@ -31,6 +33,7 @@ export function AdminNavbar() {
     const [user, setUser] = useState<any>(null);
     const [breadcrumbs, setBreadcrumbs] = useState<string[]>([]);
     const [slug, setSlug] = useState<string>('');
+    const [copied, setCopied] = useState(false);
 
     useEffect(() => {
         const currentUser = authService.getCurrentUser();
@@ -71,15 +74,11 @@ export function AdminNavbar() {
 
     const copyLink = () => {
         if (!slug) return;
-        const url = `${window.location.origin}/${slug}`;
-        navigator.clipboard.writeText(url);
-        // You might want to add a toast here
-        alert('Lien copié: ' + url);
-    };
-
-    const visitSite = () => {
-        if (!slug) return;
-        window.open(`/${slug}`, '_blank');
+        const url = getSiteUrl(slug);
+        const fullUrl = url.startsWith('http') ? url : `${window.location.origin}${url}`;
+        navigator.clipboard.writeText(fullUrl);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
     };
 
     return (
@@ -138,26 +137,34 @@ export function AdminNavbar() {
             {/* RIGHT: Actions & Profile */}
             <div className="flex items-center gap-2">
                 {slug && (
-                    <Button
-                        variant="ghost"
-                        className="gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full hidden lg:flex"
-                        onClick={visitSite}
-                    >
-                        <Store className="w-4 h-4" />
-                        <span>Visiter mon site</span>
-                    </Button>
-                )}
-
-                {slug && (
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="text-gray-500 hover:bg-gray-100 rounded-full"
-                        onClick={copyLink}
-                        title="Copier le lien"
-                    >
-                        <Copy className="w-4 h-4" />
-                    </Button>
+                    <div className="flex items-center gap-2">
+                        <a
+                            href={getSiteUrl(slug)}
+                            target={getSiteTarget(slug)}
+                            rel="noopener noreferrer"
+                        >
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="gap-2 rounded-full border-slate-200 text-slate-700 hover:border-green-400 hover:text-green-600 hidden sm:flex"
+                            >
+                                <ExternalLink className="w-4 h-4" />
+                                Voir le site
+                            </Button>
+                        </a>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            className={`gap-2 rounded-full transition-colors hidden sm:flex ${copied
+                                ? 'border-green-400 text-green-600 bg-green-50'
+                                : 'border-slate-200 text-slate-700 hover:border-green-400 hover:text-green-600'
+                                }`}
+                            onClick={copyLink}
+                        >
+                            {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                            {copied ? 'Lien copié !' : 'Copier le lien'}
+                        </Button>
+                    </div>
                 )}
 
                 <div className="h-6 w-px bg-gray-200 mx-1"></div>

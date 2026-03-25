@@ -136,7 +136,7 @@ function HeroSection() {
                             className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass mb-6"
                         >
                             <Sparkles className="w-4 h-4 text-green-400" />
-                            <span className="text-sm text-gray-300">Essai gratuit 14 jours • Sans carte bancaire</span>
+                            <span className="text-sm text-gray-300">Essai gratuit 30 jours • Sans carte bancaire</span>
                         </motion.div>
 
                         <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">
@@ -158,10 +158,10 @@ function HeroSection() {
                                 <Camera className="w-5 h-5" />
                                 Créer mon site gratuitement
                             </a>
-                            <button className="border border-white/20 text-white hover:bg-white/5 px-6 py-3 rounded-lg flex items-center justify-center gap-2 transition-colors">
+                            {/* <button className="border border-white/20 text-white hover:bg-white/5 px-6 py-3 rounded-lg flex items-center justify-center gap-2 transition-colors">
                                 <Layout className="w-5 h-5" />
                                 Voir une démo
-                            </button>
+                            </button>*/}
                         </div>
 
                         {/* Social Proof Mini */}
@@ -542,62 +542,49 @@ function PricingSection() {
 
     const plans = [
         {
-            id: 'starter',
-            name: 'Starter',
-            description: 'Lancez votre activité pro',
-            price: { monthly: 5000, yearly: 50000 },
+            id: 'mensuel',
+            name: 'Mensuel',
+            description: 'Flexibilité totale, sans engagement',
+            price: 5000,
+            period: '/mois',
             features: [
                 'Site Builder complet',
-                '5 pages max',
-                '20 photos portfolio',
-                '4 galeries/mois',
-                '500 MB stockage',
-                'Sous-domaine .vandastudio.com',
-                'Support email (48h)',
+                'Pages illimitées',
+                'Photos portfolio illimitées',
+                'Galeries illimitées',
+                'Stockage illimité',
+                'Domaine personnalisé',
+                'Sans watermark',
+                'Analytics',
+                'Support prioritaire',
+                'API access',
             ],
             cta: 'Commencer',
             popular: false,
             color: 'green',
         },
         {
-            id: 'pro',
-            name: 'Pro',
-            description: 'Pour photographes actifs',
-            price: { monthly: 15000, yearly: 150000 },
+            id: 'annuel',
+            name: 'Annuel',
+            description: 'La meilleure valeur, payez moins',
+            price: 50000,
+            period: '/an',
+            badge: 'Économisez 10 000 F',
             features: [
-                'Tout du plan Starter',
+                'Tout du plan Mensuel',
                 'Pages illimitées',
-                '500 photos portfolio',
-                '20 galeries/mois',
-                '50 GB stockage',
+                'Photos portfolio illimitées',
+                'Galeries illimitées',
+                'Stockage illimité',
                 'Domaine personnalisé',
                 'Sans watermark',
-                'Analytics basiques',
-                'Support prioritaire (12h)',
+                'Analytics',
+                'Support prioritaire',
+                'API access',
             ],
-            cta: 'Passer à Pro',
+            cta: 'Choisir Annuel',
             popular: true,
             color: 'blue',
-        },
-        {
-            id: 'studio',
-            name: 'Studio',
-            description: 'Pour studios établis',
-            price: { monthly: 45000, yearly: 450000 },
-            features: [
-                'Tout du plan Pro',
-                'Galeries illimitées',
-                '500 GB stockage',
-                '3 comptes utilisateurs',
-                'White label complet',
-                'Support chat + téléphone',
-                'Analytics avancés',
-                'API access',
-                'Backup automatique',
-            ],
-            cta: 'Devenir Studio',
-            popular: false,
-            color: 'purple',
         },
     ]
 
@@ -649,8 +636,8 @@ function PricingSection() {
                         Commencez gratuitement, upgradez quand vous êtes prêt. Pas de frais cachés.
                     </p>
 
-                    {/* Billing Toggle */}
-                    <div className="flex items-center justify-center gap-4">
+                    {/* Billing Toggle commenté */}
+                    {/* <div className="flex items-center justify-center gap-4">
                         <span className={`text-sm ${!isYearly ? 'text-white' : 'text-gray-400'}`}>Mensuel</span>
                         <button
                             onClick={() => setIsYearly(!isYearly)}
@@ -666,10 +653,10 @@ function PricingSection() {
                             Annuel
                             <span className="ml-2 px-2 py-0.5 bg-green-500/20 text-green-400 text-xs rounded-full">-17%</span>
                         </span>
-                    </div>
+                    </div> */}
                 </motion.div>
 
-                <div className="grid md:grid-cols-3 gap-8">
+                <div className="grid md:grid-cols-2 gap-8 max-w-3xl mx-auto">
                     {plans.map((plan, index) => {
                         const colors = getColorClasses(plan.color);
                         return (
@@ -688,7 +675,14 @@ function PricingSection() {
                                     <div className="absolute -top-3 left-1/2 -translate-x-1/2">
                                         <span className={`${colors.bg} text-white text-xs font-semibold px-3 py-1 rounded-full flex items-center gap-1`}>
                                             <Star className="w-3 h-3 fill-white" />
-                                            PLUS POPULAIRE
+                                            MEILLEURE VALEUR
+                                        </span>
+                                    </div>
+                                )}
+                                {(plan as any).badge && (
+                                    <div className="absolute top-4 right-4">
+                                        <span className="bg-green-500/20 text-green-400 text-xs font-semibold px-2 py-1 rounded-full">
+                                            {(plan as any).badge}
                                         </span>
                                     </div>
                                 )}
@@ -698,18 +692,13 @@ function PricingSection() {
                                     <p className="text-sm text-gray-400">{plan.description}</p>
                                 </div>
 
-                                <div className="mb-6">
+                                <div className="mb-8">
                                     <div className="flex items-baseline gap-1">
-                                        <span className="text-4xl font-bold text-white">
-                                            {(isYearly ? plan.price.yearly : plan.price.monthly).toLocaleString()} F
+                                        <span className="text-5xl font-bold text-white">
+                                            {plan.price.toLocaleString()} F
                                         </span>
-                                        <span className="text-gray-400">{isYearly ? '/an' : '/mois'}</span>
+                                        <span className="text-gray-400">{plan.period}</span>
                                     </div>
-                                    {isYearly && (
-                                        <div className="text-sm text-gray-500 mt-1">
-                                            Facturé annuellement
-                                        </div>
-                                    )}
                                 </div>
 
                                 <ul className="space-y-3 mb-8">
@@ -724,10 +713,7 @@ function PricingSection() {
                                 <a
                                     href={`${ADMIN_URL}/auth/register`}
                                     onClick={() => localStorage.setItem('selectedPlan', plan.id)}
-                                    className={`block w-full text-center py-3 rounded-lg font-medium transition-colors ${plan.popular
-                                        ? colors.button
-                                        : 'bg-white/5 hover:bg-white/10 text-white border border-white/10'
-                                        }`}
+                                    className={`block w-full text-center py-3 rounded-lg font-semibold transition-colors ${colors.button}`}
                                 >
                                     {plan.cta}
                                 </a>
@@ -827,30 +813,30 @@ function CTASection() {
                             Prêt à transformer <span className="gradient-text">votre activité ?</span>
                         </h2>
                         <p className="text-gray-400 mb-8 max-w-xl mx-auto">
-                            Rejoignez 500+ photographes qui ont déjà fait le pas. Essai gratuit de 14 jours,
+                            Rejoignez 500+ photographes qui ont déjà fait le pas. Essai gratuit de 30 jours,
                             sans engagement.
                         </p>
 
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
                             <a
-                                href="/auth/register"
+                                href={`${ADMIN_URL}/auth/register`}
                                 className="bg-green-500 hover:bg-green-600 text-black font-semibold px-8 py-3 rounded-lg flex items-center justify-center gap-2 transition-colors"
                             >
                                 <Camera className="w-5 h-5" />
                                 Créer mon site maintenant
                             </a>
-                            <a
+                            {/*<a
                                 href="/contact"
                                 className="border border-white/20 text-white hover:bg-white/5 px-8 py-3 rounded-lg flex items-center justify-center gap-2 transition-colors"
                             >
                                 Nous contacter
-                            </a>
+                            </a> */}
                         </div>
 
                         <div className="mt-8 flex items-center justify-center gap-6 text-sm text-gray-400 flex-wrap">
                             <div className="flex items-center gap-2">
                                 <Check className="w-4 h-4 text-green-400" />
-                                Essai gratuit 14 jours
+                                Essai gratuit 30 jours
                             </div>
                             <div className="flex items-center gap-2">
                                 <Check className="w-4 h-4 text-green-400" />

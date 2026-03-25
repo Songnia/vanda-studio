@@ -77,11 +77,12 @@ class GalleryController extends Controller
                 foreach ($request->file('photos') as $photo) {
                     $media = $gallery->addMedia($photo)->toMediaCollection('photos');
                     
-                    // Create Photo model record linked to this media
+                    // Stocker le chemin relatif (stable, indépendant de APP_URL)
+                    $relativePath = $media->id . '/' . $media->file_name;
                     $gallery->photos()->create([
-                        'file_path' => $media->getUrl(),
-                        'thumbnail_path' => $media->getUrl('thumb'), // Assumes conversion defined
-                        'order_column' => 0, // Logic to be added
+                        'file_path' => $relativePath,
+                        'thumbnail_path' => $relativePath, // Sera généré via Spatie conversions
+                        'order_column' => 0,
                     ]);
                 }
             }
@@ -118,6 +119,25 @@ class GalleryController extends Controller
         return response()->noContent();
     }
 
+    public function uploadZip(Request $request, $id)
+    {
+        $gallery = Gallery::ownedByCurrentUser()
+            ->where(function($query) use ($id) {
+                $query->where('uuid', $id)->orWhere('id', $id);
+            })
+            ->firstOrFail();
+
+        $validated = $request->validate([
+            'zip_file' => 'required|file',
+        ]);
+
+        $file = $request->file('zip_file');
+        $path = $file->store('zips', 'public');
+        $gallery->update(['zip_path' => $path]);
+
+        return response()->json(['message' => 'ZIP uploaded successfully', 'zip_path' => $path]);
+    }
+
     public function addPhotos(Request $request, $id)
     {
         $gallery = Gallery::ownedByCurrentUser()
@@ -134,9 +154,11 @@ class GalleryController extends Controller
             foreach ($request->file('photos') as $photo) {
                 $media = $gallery->addMedia($photo)->toMediaCollection('photos');
                 
+                // Stocker le chemin relatif (stable, indépendant de APP_URL)
+                $relativePath = $media->id . '/' . $media->file_name;
                 $gallery->photos()->create([
-                    'file_path' => $media->getUrl(),
-                    'thumbnail_path' => $media->getUrl('thumb'),
+                    'file_path' => $relativePath,
+                    'thumbnail_path' => $relativePath,
                     'order_column' => 0,
                 ]);
             }

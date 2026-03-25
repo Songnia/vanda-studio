@@ -1,9 +1,11 @@
 import React from 'react';
 import { Box, ThemeProvider, CssBaseline, CircularProgress, Typography } from '@mui/material';
 import { Outlet } from 'react-router-dom';
+import { I18nextProvider } from 'react-i18next';
 import { SiteConfigProvider, useSiteConfig } from '@/context/SiteConfigContext';
 import { CartProvider } from '@/template/context/CartContext';
 import { createThemeFromConfig } from '@/template/theme/theme';
+import i18nInstance from '@/template/i18n';
 import Navbar from './Navbar';
 import Footer from './Footer';
 
@@ -109,9 +111,11 @@ const LayoutContent: React.FC = () => {
  */
 const Layout: React.FC<LayoutProps> = ({ slug }) => {
     return (
-        <SiteConfigProvider slug={slug}>
-            <LayoutContent />
-        </SiteConfigProvider>
+        <I18nextProvider i18n={i18nInstance}>
+            <SiteConfigProvider slug={slug}>
+                <LayoutContent />
+            </SiteConfigProvider>
+        </I18nextProvider>
     );
 };
 

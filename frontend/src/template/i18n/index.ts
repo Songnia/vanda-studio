@@ -7,6 +7,7 @@ import frTranslation from './locales/fr.json';
 i18n
     .use(initReactI18next)
     .init({
+        lng: 'fr',
         resources: {
             en: {
                 translation: enTranslation,
