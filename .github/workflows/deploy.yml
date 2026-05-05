@@ -37,17 +37,18 @@ jobs:
         run: composer install --no-dev --optimize-autoloader
 
       # --- DEPLOYMENT ---
-      - name: Deploy via SSH/Rsync
-        uses: easingthemes/ssh-deploy@main
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          ARGS: "-rlgoDzvc -i --delete"
-          SOURCE: "/"
-          REMOTE_HOST: ${{ secrets.SSH_HOST }}
-          REMOTE_USER: ${{ secrets.SSH_USER }}
-          SSH_PORT: 2222
-          TARGET: ${{ secrets.REMOTE_PATH }}
-          EXCLUDE: "/node_modules/, /vendor/, /storage/, /tests/, .git/, .github/, .env"
+      - name: Deploy via Rsync
+        run: |
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key
+          chmod 600 private_key
+          rsync -avz -e "ssh -i private_key -p 2222 -o StrictHostKeyChecking=no" \
+            --exclude='node_modules' \
+            --exclude='vendor' \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='.env' \
+            ./ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.REMOTE_PATH }}
+          rm private_key
 
       # --- POST-DEPLOYMENT COMMANDS ---
       - name: Post-deployment Commands
