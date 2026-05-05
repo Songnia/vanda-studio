@@ -7,7 +7,7 @@ import { Link as RouterLink, useNavigate, useLocation } from 'react-router-dom';
 // import { useCart } from '@/template/context/CartContext';
 import { authService } from '../../services/authService';
 import { useSiteConfig } from '@/context/SiteConfigContext';
-import defaultLogo from '@/template/assets/logo/logo2.svg';
+import defaultLogo from '@/template/assets/logo/vanda_logo.png';
 
 const Navbar: React.FC<{ basePath?: string }> = ({ basePath }) => {
     const { config } = useSiteConfig();

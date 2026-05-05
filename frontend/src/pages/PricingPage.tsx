@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Check, Star, ArrowRight, Menu, X } from 'lucide-react'
+import vandaLogo from '@/template/assets/logo/vanda_logo.png'
 import PublicFooter from '../components/Layout/PublicFooter'
 
 const ADMIN_URL = import.meta.env.VITE_ADMIN_URL || 'https://app.vanda-studio.org';
@@ -30,15 +31,20 @@ function PricingNavbar() {
                 <div className="flex items-center justify-between h-16">
                     {/* Logo */}
                     <a href="/" className="flex items-center gap-2 group">
+                        <img
+                            src={vandaLogo}
+                            alt="Vanda Studio Logo"
+                            style={{ height: '50px', objectFit: 'contain' }}
+                        />
                         <span style={{
-                            fontSize: '1.5rem',
+                            fontSize: '1.25rem',
                             fontWeight: 800,
                             background: 'linear-gradient(135deg, #4caf50 0%, #81c784 100%)',
                             WebkitBackgroundClip: 'text',
                             WebkitTextFillColor: 'transparent',
                             letterSpacing: '-0.5px'
                         }}>
-                            🞹 VANDA STUDIO
+                            VANDA STUDIO
                         </span>
                     </a>
 

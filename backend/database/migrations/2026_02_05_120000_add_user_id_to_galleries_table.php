@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('galleries', function (Blueprint $table) {
-            $table->foreignId('user_id')->after('id')->constrained()->onDelete('cascade');
-        });
+        if (!Schema::hasColumn('galleries', 'user_id')) {
+            Schema::table('galleries', function (Blueprint $table) {
+                $table->foreignId('user_id')->after('id')->constrained()->onDelete('cascade');
+            });
+        }
     }
 
     /**

@@ -3,6 +3,7 @@ import { Palette } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
+import { SaveButton } from '@/builder/components/SaveButton';
 import type { SiteConfig } from '@/types/builder';
 
 interface BrandingStepProps {
@@ -10,6 +11,8 @@ interface BrandingStepProps {
   onUpdate: (updates: Partial<SiteConfig>) => void;
   onNext: () => void;
   onPrev: () => void;
+  onSave: (updates?: Partial<SiteConfig>) => Promise<boolean>;
+  isSaving: boolean;
 }
 
 const colorPresets = [
@@ -63,7 +66,8 @@ const colorPresets = [
   }
 ];
 
-export function BrandingStep({ config, onUpdate, onNext, onPrev }: BrandingStepProps) {
+export function BrandingStep({ config, onUpdate, onNext, onPrev, onSave, isSaving }: BrandingStepProps) {
+  const [isDirty, setIsDirty] = useState(false);
   const [colors, setColors] = useState({
     primaryColor: config.primaryColor,
     secondaryColor: config.secondaryColor,
@@ -74,6 +78,7 @@ export function BrandingStep({ config, onUpdate, onNext, onPrev }: BrandingStepP
 
   const handleColorChange = (field: string, value: string) => {
     setColors(prev => ({ ...prev, [field]: value }));
+    setIsDirty(true);
   };
 
   const applyPreset = (preset: typeof colorPresets[0]) => {
@@ -84,11 +89,22 @@ export function BrandingStep({ config, onUpdate, onNext, onPrev }: BrandingStepP
       backgroundColor: preset.background,
       textColor: preset.text
     });
+    setIsDirty(true);
   };
 
   const handleSubmit = () => {
     onUpdate(colors);
     onNext();
+  };
+
+  const handleSave = async () => {
+    onUpdate(colors);
+    if (typeof onSave === 'function') {
+      const ok = await onSave(colors);
+      if (ok) setIsDirty(false);
+      return ok;
+    }
+    return false;
   };
 
   return (
@@ -99,7 +115,7 @@ export function BrandingStep({ config, onUpdate, onNext, onPrev }: BrandingStepP
       </div>
 
       {/* Préréglages */}
-      <div className="space-y-3">
+      {/*<div className="space-y-3">
         <Label>Thèmes prédéfinis</Label>
         <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
           {colorPresets.map((preset) => (
@@ -122,7 +138,7 @@ export function BrandingStep({ config, onUpdate, onNext, onPrev }: BrandingStepP
             </button>
           ))}
         </div>
-      </div>
+      </div>*/}
 
       <Card className="p-6">
         <div className="space-y-6">
@@ -132,28 +148,32 @@ export function BrandingStep({ config, onUpdate, onNext, onPrev }: BrandingStepP
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Couleur principale */}
-            <div className="space-y-2">
-              <Label htmlFor="primaryColor">Couleur principale</Label>
-              <div className="flex gap-2">
-                <input
-                  type="color"
-                  id="primaryColor"
-                  value={colors.primaryColor}
-                  onChange={(e) => handleColorChange('primaryColor', e.target.value)}
-                  className="w-12 h-10 rounded cursor-pointer"
-                />
-                <input
-                  type="text"
-                  value={colors.primaryColor}
-                  onChange={(e) => handleColorChange('primaryColor', e.target.value)}
-                  className="flex-1 px-3 py-2 border rounded-md text-sm"
-                />
+            <div className="space-y-3">
+              <Label htmlFor="primaryColor" className="text-sm font-medium text-gray-700">Couleur principale</Label>
+              <div className="flex items-center gap-3">
+                <div className="relative w-10 h-10 rounded-lg overflow-hidden border border-gray-200 shadow-sm">
+                  <input
+                    type="color"
+                    id="primaryColor"
+                    value={colors.primaryColor}
+                    onChange={(e) => handleColorChange('primaryColor', e.target.value)}
+                    className="absolute inset-[-4px] w-[calc(100%+8px)] h-[calc(100%+8px)] cursor-pointer"
+                  />
+                </div>
+                <div className="flex-1">
+                  <input
+                    type="text"
+                    value={colors.primaryColor}
+                    onChange={(e) => handleColorChange('primaryColor', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm font-mono focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all"
+                    placeholder="#000000"
+                  />
+                </div>
               </div>
-              <p className="text-xs text-gray-500">Titres, navigation, footer</p>
+              <p className="text-[11px] text-gray-500 font-medium">Utilisée pour les titres, la navigation et le footer</p>
             </div>
 
-            {/* Couleur d'accent */}
+            {/* Couleur d'accent — masqué temporairement
             <div className="space-y-2">
               <Label htmlFor="accentColor">Couleur d'accent</Label>
               <div className="flex gap-2">
@@ -173,29 +193,34 @@ export function BrandingStep({ config, onUpdate, onNext, onPrev }: BrandingStepP
               </div>
               <p className="text-xs text-gray-500">Boutons, badges, éléments mis en avant</p>
             </div>
+            */}
 
-            {/* Couleur secondaire */}
-            <div className="space-y-2">
-              <Label htmlFor="secondaryColor">Couleur secondaire</Label>
-              <div className="flex gap-2">
-                <input
-                  type="color"
-                  id="secondaryColor"
-                  value={colors.secondaryColor}
-                  onChange={(e) => handleColorChange('secondaryColor', e.target.value)}
-                  className="w-12 h-10 rounded cursor-pointer"
-                />
-                <input
-                  type="text"
-                  value={colors.secondaryColor}
-                  onChange={(e) => handleColorChange('secondaryColor', e.target.value)}
-                  className="flex-1 px-3 py-2 border rounded-md text-sm"
-                />
+            <div className="space-y-3">
+              <Label htmlFor="secondaryColor" className="text-sm font-medium text-gray-700">Couleur secondaire</Label>
+              <div className="flex items-center gap-3">
+                <div className="relative w-10 h-10 rounded-lg overflow-hidden border border-gray-200 shadow-sm">
+                  <input
+                    type="color"
+                    id="secondaryColor"
+                    value={colors.secondaryColor}
+                    onChange={(e) => handleColorChange('secondaryColor', e.target.value)}
+                    className="absolute inset-[-4px] w-[calc(100%+8px)] h-[calc(100%+8px)] cursor-pointer"
+                  />
+                </div>
+                <div className="flex-1">
+                  <input
+                    type="text"
+                    value={colors.secondaryColor}
+                    onChange={(e) => handleColorChange('secondaryColor', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm font-mono focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all"
+                    placeholder="#F5F5F5"
+                  />
+                </div>
               </div>
-              <p className="text-xs text-gray-500">Arrière-plans alternatifs</p>
+              <p className="text-[11px] text-gray-500 font-medium">Utilisée pour les arrière-plans alternatifs et sections</p>
             </div>
 
-            {/* Couleur de fond */}
+            {/* Couleur de fond — masqué temporairement
             <div className="space-y-2">
               <Label htmlFor="backgroundColor">Couleur de fond</Label>
               <div className="flex gap-2">
@@ -215,6 +240,7 @@ export function BrandingStep({ config, onUpdate, onNext, onPrev }: BrandingStepP
               </div>
               <p className="text-xs text-gray-500">Fond principal du site</p>
             </div>
+            */}
           </div>
 
           {/* Aperçu */}
@@ -250,16 +276,23 @@ export function BrandingStep({ config, onUpdate, onNext, onPrev }: BrandingStepP
         </div>
       </Card>
 
-      <div className="flex justify-between">
-        <Button variant="outline" onClick={onPrev}>
+      <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 pt-6 border-t border-gray-100">
+        <Button 
+          variant="outline" 
+          onClick={onPrev}
+          className="w-full sm:w-auto h-11 sm:h-10 order-2 sm:order-1"
+        >
           Retour
         </Button>
-        <Button
-          onClick={handleSubmit}
-          className="bg-green-500 hover:bg-green-600 text-black"
-        >
-          Continuer
-        </Button>
+        <div className="flex flex-col sm:flex-row gap-3 order-1 sm:order-2">
+          <SaveButton onSave={handleSave} isSaving={isSaving} isDirty={isDirty} className="w-full sm:w-auto h-11 sm:h-10" />
+          <Button
+            onClick={handleSubmit}
+            className="bg-green-500 hover:bg-green-600 text-black h-11 sm:h-10 w-full sm:w-auto font-bold"
+          >
+            Continuer
+          </Button>
+        </div>
       </div>
     </div>
   );

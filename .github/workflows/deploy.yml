@@ -1,0 +1,66 @@
+name: Deploy to o2switch
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # --- FRONTEND BUILD ---
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Frontend Dependencies
+        working-directory: ./frontend
+        run: npm install
+
+      - name: Build Frontend
+        working-directory: ./frontend
+        run: npm run build
+
+      # --- BACKEND PREPARATION ---
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, bcmath, gd, zip
+
+      - name: Install Backend Dependencies
+        working-directory: ./backend
+        run: composer install --no-dev --optimize-autoloader
+
+      # --- DEPLOYMENT ---
+      - name: Deploy via SSH/Rsync
+        uses: easingthemes/ssh-deploy@main
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          ARGS: "-rlgoDzvc -i --delete"
+          SOURCE: "/"
+          REMOTE_HOST: ${{ secrets.SSH_HOST }}
+          REMOTE_USER: ${{ secrets.SSH_USER }}
+          SSH_PORT: 2222
+          TARGET: ${{ secrets.REMOTE_PATH }}
+          EXCLUDE: "/node_modules/, /vendor/, /storage/, /tests/, .git/, .github/, .env"
+
+      # --- POST-DEPLOYMENT COMMANDS ---
+      - name: Post-deployment Commands
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          port: 2222
+          script: |
+            cd ${{ secrets.REMOTE_PATH }}/backend
+            php artisan migrate --force
+            php artisan config:cache
+            php artisan route:cache
+            php artisan view:cache

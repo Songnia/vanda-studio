@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
+import { SaveButton } from '@/builder/components/SaveButton';
 import type { SiteConfig } from '@/types/builder';
 
 interface InfoStepProps {
@@ -13,9 +14,12 @@ interface InfoStepProps {
   onUpdate: (updates: Partial<SiteConfig>) => void;
   onNext: () => void;
   onPrev: () => void;
+  onSave: (updates?: Partial<SiteConfig>) => Promise<boolean>;
+  isSaving: boolean;
 }
 
-export function InfoStep({ config, onUpdate, onNext, onPrev }: InfoStepProps) {
+export function InfoStep({ config, onUpdate, onNext, onPrev, onSave, isSaving }: InfoStepProps) {
+  const [isDirty, setIsDirty] = useState(false);
   const [formData, setFormData] = useState({
     siteName: config.siteName,
     tagline: config.tagline,
@@ -31,9 +35,9 @@ export function InfoStep({ config, onUpdate, onNext, onPrev }: InfoStepProps) {
     promoterPhilosophy: config.promoterPhilosophy || '',
     promoterPhoto: config.promoterPhoto || ''
   });
-
   const handleChange = (field: string, value: string | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+    setIsDirty(true);
   };
 
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -42,6 +46,7 @@ export function InfoStep({ config, onUpdate, onNext, onPrev }: InfoStepProps) {
       const reader = new FileReader();
       reader.onloadend = () => {
         setFormData(prev => ({ ...prev, logo: reader.result as string }));
+        setIsDirty(true);
       };
       reader.readAsDataURL(file);
     }
@@ -50,6 +55,16 @@ export function InfoStep({ config, onUpdate, onNext, onPrev }: InfoStepProps) {
   const handleSubmit = () => {
     onUpdate(formData);
     onNext();
+  };
+
+  const handleSave = async () => {
+    onUpdate(formData);
+    if (typeof onSave === 'function') {
+      const ok = await onSave(formData);
+      if (ok) setIsDirty(false);
+      return ok;
+    }
+    return false;
   };
 
   return (
@@ -98,8 +113,8 @@ export function InfoStep({ config, onUpdate, onNext, onPrev }: InfoStepProps) {
                   Logo du studio
                 </Label>
 
-                <div className="flex items-start gap-4">
-                  <div className="flex-1">
+                <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
+                  <div className="w-full flex-1 text-center sm:text-left">
                     <Input
                       id="logo"
                       type="file"
@@ -113,11 +128,11 @@ export function InfoStep({ config, onUpdate, onNext, onPrev }: InfoStepProps) {
                   </div>
 
                   {formData.logo && (
-                    <div className="w-16 h-16 border rounded overflow-hidden bg-gray-50 flex items-center justify-center relative group">
+                    <div className="w-20 h-20 border rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center relative group flex-shrink-0">
                       <img
                         src={formData.logo}
                         alt="Logo Preview"
-                        className="w-full h-full object-contain"
+                        className="w-full h-full object-contain p-2"
                       />
                       <button
                         onClick={() => handleChange('logo', '')}
@@ -181,7 +196,7 @@ export function InfoStep({ config, onUpdate, onNext, onPrev }: InfoStepProps) {
                 id="phone"
                 value={formData.phone}
                 onChange={(e) => handleChange('phone', e.target.value)}
-                placeholder="+33 6 00 00 00 00"
+                placeholder="+237 6 00 00 00 00"
               />
             </div>
           </div>
@@ -196,7 +211,7 @@ export function InfoStep({ config, onUpdate, onNext, onPrev }: InfoStepProps) {
               id="address"
               value={formData.address}
               onChange={(e) => handleChange('address', e.target.value)}
-              placeholder="123 Rue de la Photo"
+              placeholder="Ex: Rue de la Joie"
             />
           </div>
 
@@ -208,7 +223,7 @@ export function InfoStep({ config, onUpdate, onNext, onPrev }: InfoStepProps) {
                 id="city"
                 value={formData.city}
                 onChange={(e) => handleChange('city', e.target.value)}
-                placeholder="Paris"
+                placeholder="Douala"
               />
             </div>
 
@@ -219,7 +234,7 @@ export function InfoStep({ config, onUpdate, onNext, onPrev }: InfoStepProps) {
                 id="country"
                 value={formData.country}
                 onChange={(e) => handleChange('country', e.target.value)}
-                placeholder="France"
+                placeholder="Cameroun"
               />
             </div>
           </div>
@@ -240,8 +255,8 @@ export function InfoStep({ config, onUpdate, onNext, onPrev }: InfoStepProps) {
               <ImageIcon className="w-4 h-4" />
               Photo du promoteur
             </Label>
-            <div className="flex items-start gap-4">
-              <div className="flex-1">
+            <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
+              <div className="w-full flex-1 text-center sm:text-left">
                 <Input
                   id="promoterPhoto"
                   type="file"
@@ -308,17 +323,24 @@ export function InfoStep({ config, onUpdate, onNext, onPrev }: InfoStepProps) {
         </div>
       </Card>
 
-      <div className="flex justify-between">
-        <Button variant="outline" onClick={onPrev}>
+      <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 pt-6 border-t border-gray-100">
+        <Button 
+          variant="outline" 
+          onClick={onPrev}
+          className="w-full sm:w-auto h-11 sm:h-10 order-2 sm:order-1"
+        >
           Retour
         </Button>
-        <Button
-          onClick={handleSubmit}
-          disabled={!formData.siteName || !formData.email}
-          className="bg-green-500 hover:bg-green-600 text-black"
-        >
-          Continuer
-        </Button>
+        <div className="flex flex-col sm:flex-row gap-3 order-1 sm:order-2">
+          <SaveButton onSave={handleSave} isSaving={isSaving} isDirty={isDirty} />
+          <Button
+            onClick={handleSubmit}
+            disabled={!formData.siteName || !formData.email}
+            className="bg-green-500 hover:bg-green-600 text-black h-11 sm:h-10 w-full sm:w-auto font-bold"
+          >
+            Continuer
+          </Button>
+        </div>
       </div>
     </div>
   );

@@ -13,9 +13,12 @@ class GalleryController extends Controller
     public function index(Request $request)
     {
         return Gallery::ownedByCurrentUser()
-            ->with(['photos' => function($query) {
-                $query->withCount('likes as is_liked');
-            }])
+            ->with([
+                'user.siteConfigs',
+                'photos' => function($query) {
+                    $query->withCount('likes as is_liked');
+                }
+            ])
             ->latest()
             ->paginate(20);
     }
@@ -34,10 +37,11 @@ class GalleryController extends Controller
             $validated = $request->validate([
                 'title' => 'required|string|max:255',
                 'description' => 'nullable|string',
+                'client_phone' => 'nullable|string|max:20',
                 'pin_code' => 'nullable|string|max:4',
                 'zip_file' => 'sometimes|file', 
                 'photos' => 'sometimes|array',
-                'photos.*' => 'file|image|mimes:jpeg,jpg,png',
+                'photos.*' => 'file|image|mimes:jpeg,jpg,png|max:5120',
             ]);
             file_put_contents($logFile, "[$timestamp] Validation passed\n", FILE_APPEND);
 
@@ -52,6 +56,7 @@ class GalleryController extends Controller
                 'user_id' => $request->user()->id,
                 'title' => $validated['title'],
                 'description' => $validated['description'] ?? null,
+                'client_phone' => $validated['client_phone'] ?? null,
                 'pin_code' => $validated['pin_code'] ?? null,
                 'status' => 'draft',
             ]);
@@ -101,9 +106,12 @@ class GalleryController extends Controller
             ->where(function($query) use ($id) {
                 $query->where('uuid', $id)->orWhere('id', $id);
             })
-            ->with(['photos' => function($query) {
-                $query->withCount('likes as is_liked');
-            }])
+            ->with([
+                'user.siteConfigs',
+                'photos' => function($query) {
+                    $query->withCount('likes as is_liked');
+                }
+            ])
             ->firstOrFail();
     }
 
@@ -147,21 +155,33 @@ class GalleryController extends Controller
             ->firstOrFail();
         
         $validated = $request->validate([
-            'photos.*' => 'required|image|mimes:jpeg,jpg,png',
+            'photos.*' => 'required|image|mimes:jpeg,jpg,png|max:5120',
         ]);
 
+        \Illuminate\Support\Facades\Log::info('Adding photos to gallery: ' . $gallery->id);
+        
         if ($request->hasFile('photos')) {
+            $files = $request->file('photos');
+            \Illuminate\Support\Facades\Log::info('Photos count in request: ' . (is_array($files) ? count($files) : '1'));
+            
             foreach ($request->file('photos') as $photo) {
-                $media = $gallery->addMedia($photo)->toMediaCollection('photos');
-                
-                // Stocker le chemin relatif (stable, indépendant de APP_URL)
-                $relativePath = $media->id . '/' . $media->file_name;
-                $gallery->photos()->create([
-                    'file_path' => $relativePath,
-                    'thumbnail_path' => $relativePath,
-                    'order_column' => 0,
-                ]);
+                try {
+                    $media = $gallery->addMedia($photo)->toMediaCollection('photos');
+                    \Illuminate\Support\Facades\Log::info('Media added: ' . $media->id);
+                    
+                    // Stocker le chemin relatif (stable, indépendant de APP_URL)
+                    $relativePath = $media->id . '/' . $media->file_name;
+                    $gallery->photos()->create([
+                        'file_path' => $relativePath,
+                        'thumbnail_path' => $relativePath,
+                        'order_column' => 0,
+                    ]);
+                } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\Log::error('Failed to add photo: ' . $e->getMessage());
+                }
             }
+        } else {
+            \Illuminate\Support\Facades\Log::warning('No photos found in request for gallery: ' . $gallery->id);
         }
 
         return response()->json($gallery->load('photos'));

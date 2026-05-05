@@ -15,15 +15,17 @@ export interface Gallery {
     zipFileSize: string;
     pin?: string;
     photographerSlug?: string;
+    clientPhone?: string;
 }
 
 export interface CreateGalleryData {
     title: string;
     description: string;
-    images: Omit<GalleryImage, 'isLiked'>[]; // Keep for compatibility or remove if unused
-    files?: File[]; // Actual image files
+    clientPhone?: string;
+    images: Omit<GalleryImage, 'isLiked'>[];
+    files?: File[];
     zipFileUrl: string;
     zipFileSize: string;
-    zipFileBlob?: File; // Actual zip file
+    zipFileBlob?: File;
     pin?: string;
 }

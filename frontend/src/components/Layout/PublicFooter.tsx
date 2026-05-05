@@ -1,4 +1,5 @@
 import { Globe } from 'lucide-react'
+import vandaLogo from '@/template/assets/logo/vanda_logo.png'
 
 export default function PublicFooter() {
     const links = {
@@ -34,8 +35,22 @@ export default function PublicFooter() {
                 <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
                     {/* Logo & Description */}
                     <div className="col-span-2">
-                        <a href="/" className="flex items-center gap-2 mb-4">
-                            <span className="font-semibold text-white">🞹 VANDA STUDIO</span>
+                    <a href="/" className="flex items-center gap-2 mb-4">
+                            <img
+                                src={vandaLogo}
+                                alt="Vanda Studio Logo"
+                                style={{ height: '40px', objectFit: 'contain', filter: 'brightness(0) invert(1)' }}
+                            />
+                            <span style={{
+                                fontSize: '1.1rem',
+                                fontWeight: 800,
+                                background: 'linear-gradient(135deg, #4caf50 0%, #81c784 100%)',
+                                WebkitBackgroundClip: 'text',
+                                WebkitTextFillColor: 'transparent',
+                                letterSpacing: '-0.5px'
+                            }}>
+                                VANDA STUDIO
+                            </span>
                         </a>
                         <p className="text-gray-400 text-sm mb-4 max-w-xs">
                             La plateforme tout-en-un pour créer votre site de photographe professionnel

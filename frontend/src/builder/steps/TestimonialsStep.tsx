@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { SaveButton } from '@/builder/components/SaveButton';
 import type { SiteConfig, Testimonial } from '@/types/builder';
 
 interface TestimonialsStepProps {
@@ -15,6 +16,8 @@ interface TestimonialsStepProps {
   onUpdateTestimonial: (id: string, updates: Partial<Testimonial>) => void;
   onNext: () => void;
   onPrev: () => void;
+  onSave: (updates?: Partial<SiteConfig>) => Promise<boolean>;
+  isSaving: boolean;
 }
 
 export function TestimonialsStep({ 
@@ -23,8 +26,11 @@ export function TestimonialsStep({
   onRemoveTestimonial, 
   onUpdateTestimonial,
   onNext, 
-  onPrev 
+  onPrev,
+  onSave,
+  isSaving
 }: TestimonialsStepProps) {
+  const [isDirty, setIsDirty] = useState(false);
   const [testimonials, setTestimonials] = useState(config.testimonials);
   const [editingTestimonial, setEditingTestimonial] = useState<string | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -41,17 +47,20 @@ export function TestimonialsStep({
       setTestimonials(prev => [...prev, { id: Date.now().toString(), ...newTestimonial }]);
       setNewTestimonial({ name: '', role: '', content: '', rating: 5 });
       setDialogOpen(false);
+      setIsDirty(true);
     }
   };
 
   const handleRemoveTestimonial = (id: string) => {
     onRemoveTestimonial(id);
     setTestimonials(prev => prev.filter(t => t.id !== id));
+    setIsDirty(true);
   };
 
   const handleUpdateTestimonial = (id: string, updates: Partial<Testimonial>) => {
     onUpdateTestimonial(id, updates);
     setTestimonials(prev => prev.map(t => t.id === id ? { ...t, ...updates } : t));
+    setIsDirty(true);
   };
 
   const renderStars = (rating: number, interactive = false, onChange?: (r: number) => void) => {
@@ -82,15 +91,15 @@ export function TestimonialsStep({
       </div>
 
       <Card className="p-6">
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
           <div className="flex items-center gap-2">
             <MessageSquare className="w-5 h-5 text-green-500" />
-            <h3 className="font-semibold">Avis ({testimonials.length})</h3>
+            <h3 className="font-semibold text-gray-900">Avis ({testimonials.length})</h3>
           </div>
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-green-500 hover:bg-green-600 text-black">
-                <Plus className="w-4 h-4 mr-2" />
+              <Button className="w-full sm:w-auto bg-green-500 hover:bg-green-600 text-black font-semibold text-xs h-8 sm:h-10 px-3">
+                <Plus className="w-3.5 h-3.5 mr-1.5" />
                 Ajouter un témoignage
               </Button>
             </DialogTrigger>
@@ -174,13 +183,12 @@ export function TestimonialsStep({
                   />
                 ) : (
                   <>
-                    <div className="flex justify-between items-start mb-3">
-                      {renderStars(testimonial.rating)}
-                      <div className="flex gap-1">
+                    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-4">
+                      <div className="flex justify-end order-1 sm:order-2 gap-2">
                         <Button 
                           variant="ghost" 
                           size="icon"
-                          className="h-8 w-8"
+                          className="h-8 w-8 sm:h-9 sm:w-9 rounded-full bg-gray-50 hover:bg-green-50 hover:text-green-600 transition-colors"
                           onClick={() => setEditingTestimonial(testimonial.id)}
                         >
                           <Edit2 className="w-4 h-4" />
@@ -188,11 +196,14 @@ export function TestimonialsStep({
                         <Button 
                           variant="ghost" 
                           size="icon"
-                          className="h-8 w-8 text-red-500"
+                          className="h-8 w-8 sm:h-9 sm:w-9 rounded-full bg-gray-50 hover:bg-red-50 hover:text-red-600 transition-colors"
                           onClick={() => handleRemoveTestimonial(testimonial.id)}
                         >
                           <X className="w-4 h-4" />
                         </Button>
+                      </div>
+                      <div className="order-2 sm:order-1 flex justify-center sm:justify-start">
+                        {renderStars(testimonial.rating)}
                       </div>
                     </div>
 
@@ -220,16 +231,35 @@ export function TestimonialsStep({
         )}
       </Card>
 
-      <div className="flex justify-between">
-        <Button variant="outline" onClick={onPrev}>
+      <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 pt-6 border-t border-gray-100">
+        <Button 
+          variant="outline" 
+          onClick={onPrev}
+          className="w-full sm:w-auto h-11 sm:h-10 order-2 sm:order-1"
+        >
           Retour
         </Button>
-        <Button 
-          onClick={onNext}
-          className="bg-green-500 hover:bg-green-600 text-black"
-        >
-          Continuer
-        </Button>
+        <div className="flex flex-col sm:flex-row gap-3 order-1 sm:order-2">
+          <SaveButton 
+            onSave={async () => { 
+                if (typeof onSave === 'function') {
+                    const ok = await onSave(); 
+                    if (ok) setIsDirty(false); 
+                    return ok;
+                }
+                return false;
+            }} 
+            isSaving={isSaving} 
+            isDirty={isDirty} 
+            className="w-full sm:w-auto h-11 sm:h-10"
+          />
+          <Button 
+            onClick={onNext}
+            className="bg-green-500 hover:bg-green-600 text-black h-11 sm:h-10 w-full sm:w-auto font-bold"
+          >
+            Continuer
+          </Button>
+        </div>
       </div>
     </div>
   );

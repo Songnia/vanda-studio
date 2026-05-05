@@ -2,9 +2,11 @@ import { NavLink } from 'react-router-dom';
 import {
     LayoutDashboard,
     Package,
-    Palette
+    Palette,
+    FileText
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import vandaLogo from '@/template/assets/logo/vanda_logo.png';
 
 const navItems = [
     {
@@ -18,10 +20,16 @@ const navItems = [
         icon: Package,
     },
     {
+        path: '/admin/invoices/new',
+        label: 'Facturation',
+        icon: FileText,
+    },
+    {
         path: '/admin/site-builder',
         label: 'Mon Site',
         icon: Palette,
     },
+    
 ];
 
 interface SidebarProps {
@@ -34,8 +42,23 @@ export function Sidebar({ className, showLogo = true }: SidebarProps) {
         <div className={cn("flex flex-col h-full bg-slate-50 border-r border-slate-200", className)}>
             {/* Logo */}
             {showLogo && (
-                <div className="h-16 flex items-center px-6 border-b border-slate-200">
-                    <span className="font-bold text-xl tracking-tight">ULTIMATE STUDIO</span>
+                <div className="h-20 flex items-center px-4 border-b border-slate-200 gap-3">
+                    <img
+                        src={vandaLogo}
+                        alt="Vanda Studio Logo"
+                        style={{ height: '42px', objectFit: 'contain' }}
+                    />
+                    <span style={{
+                        fontSize: '0.95rem',
+                        fontWeight: 800,
+                        background: 'linear-gradient(135deg, #4caf50 0%, #81c784 100%)',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        letterSpacing: '-0.3px',
+                        lineHeight: 1.2
+                    }}>
+                        VANDA<br/>STUDIO
+                    </span>
                 </div>
             )}
 

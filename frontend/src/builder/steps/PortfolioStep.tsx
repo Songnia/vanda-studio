@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import type { SiteConfig, Photo } from '@/types/builder';
 import { usePlanLimits } from '@/hooks/usePlanLimits';
 import { UpgradeDialog } from '@/components/common/UpgradeDialog';
+import { SaveButton } from '@/builder/components/SaveButton';
 
 interface PortfolioStepProps {
   config: SiteConfig;
@@ -16,6 +17,8 @@ interface PortfolioStepProps {
   onRemovePhoto: (id: string) => void;
   onNext: () => void;
   onPrev: () => void;
+  onSave: (updates?: Partial<SiteConfig>) => Promise<boolean>;
+  isSaving: boolean;
 }
 
 const defaultCategories = [
@@ -31,7 +34,8 @@ const defaultCategories = [
   "Architecture"
 ];
 
-export function PortfolioStep({ config, onAddPhoto, onAddPhotos, onRemovePhoto, onNext, onPrev }: PortfolioStepProps) {
+export function PortfolioStep({ config, onAddPhoto, onAddPhotos, onRemovePhoto, onNext, onPrev, onSave, isSaving }: PortfolioStepProps) {
+  const [isDirty, setIsDirty] = useState(false);
   const [photos, setPhotos] = useState<Photo[]>(config.photos);
   const [newCategory, setNewCategory] = useState('');
   const [categories, setCategories] = useState<string[]>([...defaultCategories]);
@@ -103,6 +107,7 @@ export function PortfolioStep({ config, onAddPhoto, onAddPhotos, onRemovePhoto, 
     // Réinitialiser le formulaire
     setNewPhoto({ url: '', category: '' });
     setUploadDialogOpen(false);
+    setIsDirty(true);
   };
 
   const handleAddPhoto = () => {
@@ -120,12 +125,14 @@ export function PortfolioStep({ config, onAddPhoto, onAddPhotos, onRemovePhoto, 
       }]);
       setNewPhoto({ url: '', category: '' });
       setUploadDialogOpen(false);
+      setIsDirty(true);
     }
   };
 
   const handleRemovePhoto = (id: string) => {
     onRemovePhoto(id);
     setPhotos(prev => prev.filter(p => p.id !== id));
+    setIsDirty(true);
   };
 
   const handleAddCategory = () => {
@@ -178,30 +185,31 @@ export function PortfolioStep({ config, onAddPhoto, onAddPhotos, onRemovePhoto, 
             );
           })}
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-col sm:flex-row gap-2">
           <Input
             value={newCategory}
             onChange={(e) => setNewCategory(e.target.value)}
             placeholder="Nouvelle catégorie..."
             className="flex-1"
           />
-          <Button variant="outline" onClick={handleAddCategory} disabled={!newCategory}>
-            <Plus className="w-4 h-4" />
+          <Button variant="outline" onClick={handleAddCategory} disabled={!newCategory} className="w-full sm:w-auto text-xs h-8 sm:h-10 font-semibold">
+            <Plus className="w-3 h-3 mr-1.5 sm:mr-0" />
+            <span className="sm:hidden">Ajouter</span>
           </Button>
         </div>
       </Card>
 
       {/* Photos */}
       <Card className="p-6">
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
           <div className="flex items-center gap-2">
             <LayoutGrid className="w-5 h-5 text-green-500" />
-            <h3 className="font-semibold">Photos ({filteredPhotos.length})</h3>
+            <h3 className="font-semibold text-gray-900">Photos ({filteredPhotos.length})</h3>
           </div>
           <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
             <DialogTrigger asChild>
               <Button
-                className="bg-green-500 hover:bg-green-600 text-black"
+                className="w-full sm:w-auto bg-green-500 hover:bg-green-600 text-black font-semibold text-xs h-8 sm:h-10 px-3"
                 onClick={(e) => {
                   // Check photo limit before opening dialog
                   if (checkLimit('photos', photos.length)) {
@@ -210,7 +218,7 @@ export function PortfolioStep({ config, onAddPhoto, onAddPhotos, onRemovePhoto, 
                   }
                 }}
               >
-                <Upload className="w-4 h-4 mr-2" />
+                <Upload className="w-3 h-3 mr-1.5" />
                 Ajouter une photo
               </Button>
             </DialogTrigger>
@@ -326,16 +334,35 @@ export function PortfolioStep({ config, onAddPhoto, onAddPhotos, onRemovePhoto, 
         )}
       </Card>
 
-      <div className="flex justify-between">
-        <Button variant="outline" onClick={onPrev}>
+      <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 pt-6 border-t border-gray-100">
+        <Button 
+          variant="outline" 
+          onClick={onPrev}
+          className="w-full sm:w-auto h-11 sm:h-10 order-2 sm:order-1"
+        >
           Retour
         </Button>
-        <Button
-          onClick={onNext}
-          className="bg-green-500 hover:bg-green-600 text-black"
-        >
-          Continuer
-        </Button>
+        <div className="flex flex-col sm:flex-row gap-3 order-1 sm:order-2">
+          <SaveButton 
+            onSave={async () => { 
+                if (typeof onSave === 'function') {
+                    const ok = await onSave(); 
+                    if (ok) setIsDirty(false); 
+                    return ok;
+                }
+                return false;
+            }} 
+            isSaving={isSaving} 
+            isDirty={isDirty}
+            className="w-full sm:w-auto h-11 sm:h-10"
+          />
+          <Button
+            onClick={onNext}
+            className="bg-green-500 hover:bg-green-600 text-black h-11 sm:h-10 w-full sm:w-auto font-bold"
+          >
+            Continuer
+          </Button>
+        </div>
       </div>
 
       {/* Upgrade Dialog */}

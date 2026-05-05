@@ -15,9 +15,10 @@ const mapGalleryFromApi = (data: any): Gallery => {
             isLiked: photo.is_liked,
         })),
         zipFileUrl: data.zip_url || '#',
-        zipFileSize: 'Unknown', // TODO: Add size to backend response
+        zipFileSize: 'Unknown',
         pin: data.pin_code,
         photographerSlug: data.photographer_slug,
+        clientPhone: data.client_phone || undefined,
     };
 };
 
@@ -45,6 +46,7 @@ export const galleryService = {
         formData.append('title', data.title);
         formData.append('description', data.description);
         if (data.pin) formData.append('pin_code', data.pin);
+        if (data.clientPhone) formData.append('client_phone', data.clientPhone);
 
         // Append photos
         if (data.files && data.files.length > 0) {

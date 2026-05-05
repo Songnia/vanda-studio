@@ -11,7 +11,7 @@ import { Link as RouterLink, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useSiteConfig } from '@/context/SiteConfigContext';
 
-import logo from '@/template/assets/logo/logo2.svg';
+import logo from '@/template/assets/logo/vanda_logo.png';
 
 const Footer: React.FC = () => {
     const { t } = useTranslation();

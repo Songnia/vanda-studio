@@ -32,7 +32,7 @@ class SiteConfigController extends Controller
     {
         $validated = $request->validate([
             'site_name' => 'required|string|max:255',
-            'slug' => 'required|string|unique:site_configs,slug|regex:/^[a-z0-9-]+$/',
+            'slug' => 'nullable|string|unique:site_configs,slug|regex:/^[a-z0-9-]+$/',
             'config_data' => 'required|array',
             'is_published' => 'boolean',
         ]);
@@ -42,8 +42,11 @@ class SiteConfigController extends Controller
         $validated['is_published'] = $request->input('is_published', true);
 
         $siteConfig = SiteConfig::create($validated);
-
-        return response()->json($siteConfig, 201);
+        
+        return response()->json([
+            'message' => 'Site configuration created successfully',
+            'data' => $siteConfig
+        ], 201);
     }
 
     /**

@@ -11,7 +11,8 @@ import {
     HelpCircle,
     Globe,
     ChevronDown,
-    CreditCard
+    CreditCard,
+    Menu
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -26,8 +27,13 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { authService } from '../../services/authService';
 import { siteConfigService } from '../../services/siteConfigService';
 import { getSiteUrl, getSiteTarget } from '@/utils/siteUrl';
+import vandaLogo from '@/template/assets/logo/vanda_logo.png';
 
-export function AdminNavbar() {
+interface AdminNavbarProps {
+    onMenuClick?: () => void;
+}
+
+export function AdminNavbar({ onMenuClick }: AdminNavbarProps) {
     const navigate = useNavigate();
     const location = useLocation();
     const [user, setUser] = useState<any>(null);
@@ -85,18 +91,15 @@ export function AdminNavbar() {
         <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 sticky top-0 z-50">
             {/* LEFT: Breadcrumbs & Back */}
             <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2">
-                    {/* Placeholder Logo */}
-                    <div className="font-bold text-xl tracking-tight flex items-center gap-1">
-                        <span className="text-green-500">🞹</span>
-                        <span>VANDA</span>
-                    </div>
-                    <span className="bg-gray-100 text-xs px-2 py-0.5 rounded-full text-gray-600 font-medium">
-                        Studio
-                    </span>
+                <div className="flex items-center gap-3">
+                    <img
+                        src={vandaLogo}
+                        alt="Vanda Studio Logo"
+                        className="h-[32px] md:h-[38px] object-contain"
+                    />
                 </div>
 
-                <div className="flex items-center gap-1 text-sm">
+                <div className="hidden sm:flex items-center gap-1 text-sm">
                     <Button
                         variant="ghost"
                         size="sm"
@@ -107,7 +110,7 @@ export function AdminNavbar() {
                     </Button>
                     {breadcrumbs.map((crumb, index) => (
                         <div key={index} className="flex items-center">
-                            <span className="flex items-center">
+                            <span className="flex items-center max-w-[100px] md:max-w-none truncate">
                                 {crumb}
                             </span>
                             {index < breadcrumbs.length - 1 && (
@@ -166,6 +169,18 @@ export function AdminNavbar() {
                         </Button>
                     </div>
                 )}
+
+                <div className="h-6 w-px bg-gray-200 mx-1 hidden sm:block"></div>
+
+                {/* Mobile Menu Button */}
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    className="md:hidden text-slate-600"
+                    onClick={onMenuClick}
+                >
+                    <Menu className="w-6 h-6" />
+                </Button>
 
                 <div className="h-6 w-px bg-gray-200 mx-1"></div>
 

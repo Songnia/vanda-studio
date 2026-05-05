@@ -11,7 +11,7 @@ class Gallery extends Model implements HasMedia
 {
     use HasFactory, InteractsWithMedia;
 
-    protected $fillable = ['user_id', 'uuid', 'title', 'description', 'pin_code', 'zip_path', 'status'];
+    protected $fillable = ['user_id', 'uuid', 'title', 'description', 'client_phone', 'pin_code', 'zip_path', 'status'];
 
     public function user()
     {
@@ -37,7 +37,13 @@ class Gallery extends Model implements HasMedia
         return $query->where('user_id', auth()->id());
     }
 
-    protected $appends = ['zip_url'];
+    protected $appends = ['zip_url', 'photographer_slug'];
+
+    public function getPhotographerSlugAttribute()
+    {
+        // Get the slug from the user's first site config
+        return $this->user->siteConfigs->first()?->slug;
+    }
 
     public function getZipUrlAttribute()
     {

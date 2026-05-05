@@ -22,22 +22,13 @@ const LayoutContent: React.FC = () => {
     // État de chargement
     if (loading) {
         return (
-            <Box
-                sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    minHeight: '100vh',
-                    gap: 2,
-                    bgcolor: '#f8f8f5',
-                }}
-            >
-                <CircularProgress size={60} sx={{ color: '#f2f20d' }} />
-                <Typography variant="h6" color="text.secondary">
-                    Chargement du site...
-                </Typography>
-            </Box>
+            <div className="flex flex-col items-center justify-center min-h-screen gap-4 bg-[#f8f8f5] w-full">
+                <div className="relative w-14 h-14">
+                    <div className="absolute inset-0 border-4 border-slate-200 rounded-full"></div>
+                    <div className="absolute inset-0 border-4 border-t-green-500 rounded-full animate-spin"></div>
+                </div>
+                <h6 className="text-slate-500 font-medium text-lg animate-pulse">Chargement de votre site...</h6>
+            </div>
         );
     }
 

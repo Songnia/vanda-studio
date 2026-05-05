@@ -1,7 +1,8 @@
-import { Camera, Menu } from 'lucide-react';
+import { PenLine, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { StepIndicator } from './StepIndicator';
 import { builderSteps } from '@/types/builder';
+import vandaLogo from '@/template/assets/logo/vanda_logo.png';
 
 interface BuilderLayoutProps {
   children: React.ReactNode;
@@ -10,32 +11,56 @@ interface BuilderLayoutProps {
   onNext: () => void;
   onPrev: () => void;
   embedded?: boolean;
+  /** True if the user has already saved/built a site at least once */
+  hasSiteBuilt?: boolean;
 }
 
 export function BuilderLayout({
   children,
   currentStep,
   onStepChange,
-  embedded = false
+  embedded = false,
+  hasSiteBuilt = false
 }: BuilderLayoutProps) {
   const currentStepData = builderSteps[currentStep];
   const progress = ((currentStep + 1) / builderSteps.length) * 100;
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      {/* Header */}
-      <header className="bg-white border-b sticky top-0 z-50">
+      {/* Header - Hide if embedded in admin dashboard */}
+      {!embedded && (
+        <header className="bg-white border-b sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
-            {/* Logo */}
-            <div className="flex items-center gap-2">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center">
-                <Camera className="w-5 h-5 text-white" />
-              </div>
+            {/* Logo + badge contextuel */}
+            <div className="flex items-center gap-3">
+              <img
+                src={vandaLogo}
+                alt="Vanda Studio Logo"
+                style={{ height: '42px', objectFit: 'contain' }}
+              />
               <div>
-                <h1 className="font-bold text-lg leading-tight">VANDA Builder</h1>
+                <h1 className="font-bold text-lg leading-tight" style={{
+                  background: 'linear-gradient(135deg, #4caf50 0%, #81c784 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent'
+                }}>VANDA Builder</h1>
                 <p className="text-xs text-gray-500">Créez votre site en quelques minutes</p>
               </div>
+              {/* Badge état utilisateur — visible uniquement à partir du step 1 */}
+              {currentStep > 0 && (
+                hasSiteBuilt ? (
+                  <span className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-700 border border-orange-200">
+                    <PenLine className="w-3 h-3" />
+                    Modification en cours
+                  </span>
+                ) : (
+                  <span className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700 border border-green-200">
+                    <Sparkles className="w-3 h-3" />
+                    Première création
+                  </span>
+                )
+              )}
             </div>
 
             {/* Progress */}
@@ -51,23 +76,20 @@ export function BuilderLayout({
               </div>
             </div>
 
-            {/* Mobile Menu Button */}
-            <Button variant="ghost" size="icon" className="md:hidden">
-              <Menu className="w-5 h-5" />
-            </Button>
           </div>
         </div>
+        </header>
+      )}
 
-        {/* Step Indicator */}
-        <div className="border-t bg-gray-50/50">
-          <div className="max-w-6xl mx-auto px-4 py-3">
-            <StepIndicator
-              currentStep={currentStep}
-              onStepClick={onStepChange}
-            />
-          </div>
+      {/* Step Indicator - Always show in builder */}
+      <div className="border-b bg-white">
+        <div className="max-w-6xl mx-auto px-4 py-3">
+          <StepIndicator
+            currentStep={currentStep}
+            onStepClick={onStepChange}
+          />
         </div>
-      </header>
+      </div>
 
       {/* Main Content */}
       <main className="flex-1 max-w-4xl mx-auto w-full px-4 py-8">

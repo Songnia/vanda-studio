@@ -1,11 +1,12 @@
-import { useState } from 'react';
-import { Plus, X, Briefcase, Edit2, Check } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { Plus, X, Briefcase, Edit2, Check, Upload, Image as ImageIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { SaveButton } from '@/builder/components/SaveButton';
 import type { SiteConfig, Service } from '@/types/builder';
 
 interface ServicesStepProps {
@@ -15,6 +16,8 @@ interface ServicesStepProps {
   onUpdateService: (id: string, updates: Partial<Service>) => void;
   onNext: () => void;
   onPrev: () => void;
+  onSave: (updates?: Partial<SiteConfig>) => Promise<boolean>;
+  isSaving: boolean;
 }
 
 export function ServicesStep({ 
@@ -23,39 +26,62 @@ export function ServicesStep({
   onRemoveService, 
   onUpdateService,
   onNext, 
-  onPrev 
+  onPrev,
+  onSave,
+  isSaving
 }: ServicesStepProps) {
+  const [isDirty, setIsDirty] = useState(false);
   const [services, setServices] = useState(config.services);
   const [editingService, setEditingService] = useState<string | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [newService, setNewService] = useState({
     title: '',
     description: '',
-    features: ['']
+    features: [''],
+    image: ''
   });
+  const newImageInputRef = useRef<HTMLInputElement>(null);
+
+  // --- Handlers ---
+  const handleImageUpload = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    setter: (url: string) => void
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      if (ev.target?.result) setter(ev.target.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
 
   const handleAddService = () => {
     if (newService.title && newService.description) {
-      const serviceData = {
+      const serviceData: Omit<Service, 'id'> = {
         title: newService.title,
         description: newService.description,
-        features: newService.features.filter(f => f.trim() !== '')
+        features: newService.features.filter(f => f.trim() !== ''),
+        image: newService.image || undefined
       };
       onAddService(serviceData);
       setServices(prev => [...prev, { id: Date.now().toString(), ...serviceData }]);
-      setNewService({ title: '', description: '', features: [''] });
+      setNewService({ title: '', description: '', features: [''], image: '' });
       setDialogOpen(false);
+      setIsDirty(true);
     }
   };
 
   const handleRemoveService = (id: string) => {
     onRemoveService(id);
     setServices(prev => prev.filter(s => s.id !== id));
+    setIsDirty(true);
   };
 
   const handleUpdateService = (id: string, updates: Partial<Service>) => {
     onUpdateService(id, updates);
     setServices(prev => prev.map(s => s.id === id ? { ...s, ...updates } : s));
+    setIsDirty(true);
   };
 
   const addFeature = () => {
@@ -84,23 +110,82 @@ export function ServicesStep({
       </div>
 
       <Card className="p-6">
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
           <div className="flex items-center gap-2">
             <Briefcase className="w-5 h-5 text-green-500" />
-            <h3 className="font-semibold">Services ({services.length})</h3>
+            <h3 className="font-semibold text-gray-900">Services ({services.length})</h3>
           </div>
+
+          {/* ── Dialog : Nouveau service ── */}
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-green-500 hover:bg-green-600 text-black">
-                <Plus className="w-4 h-4 mr-2" />
+              <Button className="w-full sm:w-auto bg-green-500 hover:bg-green-600 text-black font-semibold text-xs h-8 sm:h-10 px-3">
+                <Plus className="w-3 h-3 mr-1.5" />
                 Ajouter un service
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
+            <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>Nouveau service</DialogTitle>
               </DialogHeader>
               <div className="space-y-4 pt-4">
+
+                {/* Image du service */}
+                <div className="space-y-2">
+                  <Label className="flex items-center gap-2">
+                    <ImageIcon className="w-4 h-4" />
+                    Image du service
+                  </Label>
+                  <input
+                    ref={newImageInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) =>
+                      handleImageUpload(e, (url) =>
+                        setNewService(prev => ({ ...prev, image: url }))
+                      )
+                    }
+                  />
+                  {newService.image ? (
+                    <div className="relative group rounded-lg overflow-hidden border border-gray-200 aspect-video">
+                      <img
+                        src={newService.image}
+                        alt="Aperçu service"
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="text-white border-white hover:bg-white/20"
+                          onClick={() => newImageInputRef.current?.click()}
+                        >
+                          Changer
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="text-white border-white hover:bg-white/20"
+                          onClick={() => setNewService(prev => ({ ...prev, image: '' }))}
+                        >
+                          <X className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => newImageInputRef.current?.click()}
+                      className="w-full border-2 border-dashed border-gray-300 rounded-lg p-6 flex flex-col items-center gap-2 hover:border-green-400 hover:bg-green-50 transition-colors"
+                    >
+                      <Upload className="w-8 h-8 text-gray-400" />
+                      <span className="text-sm text-gray-500">Cliquez pour ajouter une image</span>
+                      <span className="text-xs text-gray-400">PNG, JPG jusqu'à 10 MB</span>
+                    </button>
+                  )}
+                </div>
+
                 {/* Titre */}
                 <div className="space-y-2">
                   <Label htmlFor="serviceTitle">Nom du service *</Label>
@@ -163,6 +248,7 @@ export function ServicesStep({
           </Dialog>
         </div>
 
+        {/* ── Liste des services ── */}
         {services.length === 0 ? (
           <div className="text-center py-12 border-2 border-dashed border-gray-200 rounded-lg">
             <Briefcase className="w-16 h-16 mx-auto text-gray-300 mb-4" />
@@ -183,39 +269,57 @@ export function ServicesStep({
                     onCancel={() => setEditingService(null)}
                   />
                 ) : (
-                  <div className="flex items-start gap-4">
-                    <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center">
-                      <span className="text-sm font-bold text-green-600">{index + 1}</span>
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-semibold text-lg">{service.title}</h4>
-                      <p className="text-gray-600 text-sm mt-1">{service.description}</p>
+                  <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5">
+                    {/* Thumbnail */}
+                    {service.image ? (
+                      <div className="w-full sm:w-24 aspect-video sm:aspect-square rounded-xl overflow-hidden border border-gray-100 flex-shrink-0 shadow-sm">
+                        <img
+                          src={service.image}
+                          alt={service.title}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <div className="w-16 h-16 rounded-xl bg-green-50 border border-green-100 flex items-center justify-center flex-shrink-0">
+                        <span className="text-xl font-bold text-green-600">{index + 1}</span>
+                      </div>
+                    )}
+                    
+                    <div className="flex-1 min-w-0 text-center sm:text-left">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-2">
+                        <h4 className="font-bold text-lg sm:text-xl text-gray-900 leading-tight break-words flex-1 min-w-0">{service.title}</h4>
+                        <div className="flex justify-center sm:justify-end gap-2 flex-shrink-0">
+                          <Button 
+                            variant="ghost" 
+                            size="icon"
+                            className="h-9 w-9 rounded-full bg-gray-50 hover:bg-green-50 hover:text-green-600"
+                            onClick={() => setEditingService(service.id)}
+                          >
+                            <Edit2 className="w-4 h-4" />
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="icon"
+                            className="h-9 w-9 rounded-full bg-gray-50 hover:bg-red-50 hover:text-red-600"
+                            onClick={() => handleRemoveService(service.id)}
+                          >
+                            <X className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+                      
+                      <p className="text-gray-600 text-sm leading-relaxed mb-4">{service.description}</p>
+                      
                       {service.features.length > 0 && (
-                        <ul className="mt-3 space-y-1">
+                        <ul className="flex flex-wrap justify-center sm:justify-start gap-x-4 gap-y-2">
                           {service.features.map((feature, i) => (
-                            <li key={i} className="flex items-center gap-2 text-sm text-gray-500">
+                            <li key={i} className="flex items-center gap-2 text-xs font-medium text-gray-500 bg-gray-50 px-2 py-1 rounded">
                               <Check className="w-3 h-3 text-green-500" />
                               {feature}
                             </li>
                           ))}
                         </ul>
                       )}
-                    </div>
-                    <div className="flex gap-2">
-                      <Button 
-                        variant="outline" 
-                        size="icon"
-                        onClick={() => setEditingService(service.id)}
-                      >
-                        <Edit2 className="w-4 h-4" />
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        size="icon"
-                        onClick={() => handleRemoveService(service.id)}
-                      >
-                        <X className="w-4 h-4" />
-                      </Button>
                     </div>
                   </div>
                 )}
@@ -225,32 +329,68 @@ export function ServicesStep({
         )}
       </Card>
 
-      <div className="flex justify-between">
-        <Button variant="outline" onClick={onPrev}>
+      <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 pt-6 border-t border-gray-100">
+        <Button 
+          variant="outline" 
+          onClick={onPrev}
+          className="w-full sm:w-auto h-11 sm:h-10 order-2 sm:order-1"
+        >
           Retour
         </Button>
-        <Button 
-          onClick={onNext}
-          className="bg-green-500 hover:bg-green-600 text-black"
-        >
-          Continuer
-        </Button>
+        <div className="flex flex-col sm:flex-row gap-3 order-1 sm:order-2">
+          <SaveButton
+            onSave={async () => { 
+                if (typeof onSave === 'function') {
+                    const ok = await onSave(); 
+                    if (ok) setIsDirty(false); 
+                    return ok;
+                }
+                return false;
+            }}
+            isSaving={isSaving}
+            isDirty={isDirty}
+            className="w-full sm:w-auto h-11 sm:h-10"
+          />
+          <Button 
+            onClick={onNext}
+            className="bg-green-500 hover:bg-green-600 text-black h-11 sm:h-10 w-full sm:w-auto font-bold"
+          >
+            Continuer
+          </Button>
+        </div>
       </div>
     </div>
   );
 }
 
-// Composant pour éditer un service
+// ── Formulaire d'édition ──────────────────────────────────────────────────────
 function EditServiceForm({ 
   service, 
   onSave, 
   onCancel 
 }: { 
-  service: { title: string; description: string; features: string[] };
-  onSave: (updates: typeof service) => void;
+  service: Service;
+  onSave: (updates: Partial<Service>) => void;
   onCancel: () => void;
 }) {
-  const [formData, setFormData] = useState(service);
+  const [formData, setFormData] = useState({
+    title: service.title,
+    description: service.description,
+    features: service.features,
+    image: service.image || ''
+  });
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      if (ev.target?.result)
+        setFormData(prev => ({ ...prev, image: ev.target!.result as string }));
+    };
+    reader.readAsDataURL(file);
+  };
 
   const addFeature = () => {
     setFormData(prev => ({ ...prev, features: [...prev.features, ''] }));
@@ -272,6 +412,59 @@ function EditServiceForm({
 
   return (
     <div className="space-y-4">
+
+      {/* Image */}
+      <div className="space-y-2">
+        <Label className="flex items-center gap-2">
+          <ImageIcon className="w-4 h-4" />
+          Image du service
+        </Label>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={handleImageUpload}
+        />
+        {formData.image ? (
+          <div className="relative group rounded-lg overflow-hidden border border-gray-200 aspect-video">
+            <img
+              src={formData.image}
+              alt="Aperçu service"
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-white border-white hover:bg-white/20"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                Changer
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-white border-white hover:bg-white/20"
+                onClick={() => setFormData(prev => ({ ...prev, image: '' }))}
+              >
+                <X className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className="w-full border-2 border-dashed border-gray-300 rounded-lg p-4 flex flex-col items-center gap-2 hover:border-green-400 hover:bg-green-50 transition-colors"
+          >
+            <Upload className="w-6 h-6 text-gray-400" />
+            <span className="text-sm text-gray-500">Ajouter une image</span>
+          </button>
+        )}
+      </div>
+
+      {/* Nom */}
       <div className="space-y-2">
         <Label>Nom du service</Label>
         <Input
@@ -279,6 +472,8 @@ function EditServiceForm({
           onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
         />
       </div>
+
+      {/* Description */}
       <div className="space-y-2">
         <Label>Description</Label>
         <Textarea
@@ -287,6 +482,8 @@ function EditServiceForm({
           rows={2}
         />
       </div>
+
+      {/* Features */}
       <div className="space-y-2">
         <Label>Éléments inclus</Label>
         {formData.features.map((feature, index) => (
@@ -309,8 +506,13 @@ function EditServiceForm({
           Ajouter
         </Button>
       </div>
+
+      {/* Actions */}
       <div className="flex gap-2">
-        <Button onClick={() => onSave(formData)} className="flex-1 bg-green-500 hover:bg-green-600 text-white">
+        <Button
+          onClick={() => onSave({ ...formData, image: formData.image || undefined })}
+          className="flex-1 bg-green-500 hover:bg-green-600 text-white"
+        >
           <Check className="w-4 h-4 mr-2" />
           Enregistrer
         </Button>

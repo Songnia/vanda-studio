@@ -18,11 +18,24 @@ interface ShareDialogProps {
     open: boolean;
     onClose: () => void;
     uuid: string;
+    /** Slug du photographe pour construire le lien vers son site (ex: "jeanphoto") */
+    photographerSlug?: string;
+    /** Numéro WhatsApp du client (ex: +33612345678). Si fourni, ouvre un chat direct. */
+    clientPhone?: string;
 }
 
-const ShareDialog: React.FC<ShareDialogProps> = ({ open, onClose, uuid }) => {
+const ShareDialog: React.FC<ShareDialogProps> = ({ open, onClose, uuid, photographerSlug, clientPhone }) => {
     const [snackbarOpen, setSnackbarOpen] = useState(false);
-    const galleryUrl = `${window.location.origin}/g/${uuid}`;
+
+    // Lien vers la galerie du client
+    // - Local dev  : /{slug}/g/{uuid}
+    // - Production : https://{slug}.vanda-studio.org/g/{uuid}
+    const domain = import.meta.env.VITE_PUBLIC_DOMAIN; // ex: "vanda-studio.org"
+    const galleryUrl = photographerSlug
+        ? domain
+            ? `https://${photographerSlug}.${domain}/g/${uuid}`
+            : `${window.location.origin}/${photographerSlug}/g/${uuid}`
+        : `${window.location.origin}/g/${uuid}`; // fallback sans slug
 
     const handleCopy = () => {
         navigator.clipboard.writeText(galleryUrl);
@@ -30,15 +43,26 @@ const ShareDialog: React.FC<ShareDialogProps> = ({ open, onClose, uuid }) => {
     };
 
     const handleWhatsApp = () => {
-        const message = `Découvrez votre galerie photo : ${galleryUrl}`;
-        const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+        const message = `Bonjour ! 📸 Votre galerie photo est prête :\n${galleryUrl}`;
+
+        let whatsappUrl: string;
+        if (clientPhone) {
+            // Numéro direct : ouvre un chat avec le client
+            // Nettoie le numéro (retire espaces, tirets, parenthèses)
+            const cleanPhone = clientPhone.replace(/[\s\-().+]/g, '');
+            whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
+        } else {
+            // Pas de numéro : partage générique
+            whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+        }
+
         window.open(whatsappUrl, '_blank');
     };
 
     return (
         <>
             <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-                <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <DialogTitle component="div" sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
                         Partager la galerie
                     </Typography>
@@ -48,9 +72,18 @@ const ShareDialog: React.FC<ShareDialogProps> = ({ open, onClose, uuid }) => {
                 </DialogTitle>
 
                 <DialogContent>
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                        Copiez ce lien et partagez-le avec vos clients
-                    </Typography>
+                    {clientPhone ? (
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2, p: 1.5, bgcolor: '#f0fdf4', borderRadius: 2, border: '1px solid #bbf7d0' }}>
+                            <WhatsAppIcon sx={{ color: '#16a34a', fontSize: 18 }} />
+                            <Typography variant="body2" sx={{ color: '#15803d', fontWeight: 500 }}>
+                                Envoi direct à : <strong>{clientPhone}</strong>
+                            </Typography>
+                        </Box>
+                    ) : (
+                        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                            Copiez ce lien et partagez-le avec vos clients
+                        </Typography>
+                    )}
 
                     <TextField
                         fullWidth
@@ -76,7 +109,10 @@ const ShareDialog: React.FC<ShareDialogProps> = ({ open, onClose, uuid }) => {
                             fullWidth
                             sx={{ fontWeight: 'bold' }}
                         >
-                            Partager via WhatsApp
+                            {clientPhone
+                                ? `Envoyer à ${clientPhone}`
+                                : 'Partager via WhatsApp'
+                            }
                         </Button>
                     </Box>
                 </DialogContent>

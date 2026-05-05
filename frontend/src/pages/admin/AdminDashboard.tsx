@@ -22,9 +22,12 @@ import { UpgradeDialog } from '@/components/common/UpgradeDialog';
 const AdminDashboard: React.FC = () => {
     const navigate = useNavigate();
     const [galleries, setGalleries] = useState<Gallery[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [shareDialogOpen, setShareDialogOpen] = useState(false);
     const [shareUuid, setShareUuid] = useState('');
+    const [shareSlug, setShareSlug] = useState<string | undefined>(undefined);
+    const [sharePhone, setSharePhone] = useState<string | undefined>(undefined);
     const [user, setUser] = useState<any>(null);
 
     // Plan limits
@@ -38,11 +41,14 @@ const AdminDashboard: React.FC = () => {
     }, []);
 
     const loadGalleries = async () => {
+        setIsLoading(true);
         try {
             const allGalleries = await galleryService.getAllGalleries();
             setGalleries(allGalleries);
         } catch (error) {
             console.error("Failed to load galleries", error);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -58,7 +64,11 @@ const AdminDashboard: React.FC = () => {
     };
 
     const handleShare = (uuid: string) => {
+        // Récupère le slug et le téléphone depuis la galerie
+        const gallery = galleries.find(g => g.uuid === uuid);
         setShareUuid(uuid);
+        setShareSlug(gallery?.photographerSlug);
+        setSharePhone(gallery?.clientPhone);
         setShareDialogOpen(true);
     };
 
@@ -129,9 +139,9 @@ const AdminDashboard: React.FC = () => {
 
 
             {/* Quick Actions & Toolbar */}
-            <div className="flex flex-wrap items-center gap-8 mb-4">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 sm:gap-8 mb-6">
                 <Button
-                    className="bg-[#4caf50] text-white hover:bg-[#45a049] gap-2 rounded-full px-6 font-medium shadow-sm transition-transform hover:scale-105"
+                    className="bg-[#4caf50] text-white hover:bg-[#45a049] gap-2 rounded-full px-6 h-11 sm:h-10 font-medium shadow-sm transition-transform hover:scale-[1.02] sm:hover:scale-105 w-full sm:w-auto"
                     onClick={() => {
                         // Check gallery limit before navigation
                         if (checkLimit('galleries', galleries.length)) {
@@ -148,37 +158,15 @@ const AdminDashboard: React.FC = () => {
                     Ajouter une livraison
                 </Button>
 
-                {/* <Button
-                    variant="outline"
-                    className="gap-2 rounded-full px-6 font-medium shadow-sm transition-transform hover:scale-105 border-blue-200 text-blue-600 hover:bg-blue-50"
-                    onClick={() => {
-                        // Check if custom domain is allowed
-                        if (!limits.canCustomDomain) {
-                            setUpgradeFeature('domain');
-                            setUpgradeDialogOpen(true);
-                        } else {
-                            // TODO: Navigate to domain settings
-                            alert('Paramètres de domaine à implémenter');
-                        }
-                    }}
-                >
-                    <Globe className="w-4 h-4" />
-                    Connecter mon domaine
-                </Button> */}
-
-                <div className="relative flex-1 max-w-sm">
+                <div className="relative flex-1 max-w-none sm:max-w-sm">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                     <Input
                         placeholder="Rechercher une livraison..."
-                        className="pl-10 bg-white rounded-full border-slate-200 focus-visible:ring-green-400"
+                        className="pl-10 h-11 sm:h-10 bg-white rounded-full border-slate-200 focus-visible:ring-green-400 w-full"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
-                {/*<div className="flex gap-2 ml-auto">
-                    <Button variant="outline" size="sm" className="rounded-full">Filtres</Button>
-                    <Button variant="outline" size="sm" className="rounded-full">Exporter</Button>
-                </div> */}
             </div>
 
             {/* Table */}
@@ -195,9 +183,21 @@ const AdminDashboard: React.FC = () => {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {filteredGalleries.length === 0 ? (
+                        {isLoading ? (
                             <TableRow>
-                                <TableCell colSpan={5} className="text-center h-32 text-slate-500">
+                                <TableCell colSpan={6} className="text-center h-48">
+                                    <div className="flex flex-col items-center justify-center gap-4">
+                                        <div className="relative w-12 h-12">
+                                            <div className="absolute inset-0 border-4 border-slate-100 rounded-full"></div>
+                                            <div className="absolute inset-0 border-4 border-t-green-500 rounded-full animate-spin"></div>
+                                        </div>
+                                        <span className="text-slate-400 font-medium animate-pulse">Chargement de vos livraisons...</span>
+                                    </div>
+                                </TableCell>
+                            </TableRow>
+                        ) : filteredGalleries.length === 0 ? (
+                            <TableRow>
+                                <TableCell colSpan={6} className="text-center h-32 text-slate-500">
                                     Aucune livraison trouvée.
                                 </TableCell>
                             </TableRow>
@@ -311,6 +311,8 @@ const AdminDashboard: React.FC = () => {
                 open={shareDialogOpen}
                 onClose={() => setShareDialogOpen(false)}
                 uuid={shareUuid}
+                photographerSlug={shareSlug}
+                clientPhone={sharePhone}
             />
 
             {/* Upgrade Dialog */}

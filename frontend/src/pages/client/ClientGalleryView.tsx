@@ -10,6 +10,7 @@ import {
     Snackbar,
     Alert,
     Container,
+    CircularProgress,
 } from '@mui/material';
 import {
     Favorite as FavoriteIcon,
@@ -352,20 +353,36 @@ const GalleryContent: React.FC<{ gallery: Gallery; onUpdateGallery: (g: Gallery)
 const ClientGalleryView: React.FC = () => {
     const { uuid } = useParams<{ uuid: string }>();
     const [gallery, setGallery] = useState<Gallery | null>(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchGallery = async () => {
             if (uuid) {
+                setLoading(true);
                 try {
                     const g = await galleryService.getGalleryByUUID(uuid);
                     setGallery(g);
                 } catch (error) {
                     console.error("Failed to fetch gallery", error);
+                } finally {
+                    setLoading(false);
                 }
             }
         };
         fetchGallery();
     }, [uuid]);
+
+    if (loading) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[80vh] gap-4 w-full">
+                <div className="relative w-12 h-12">
+                    <div className="absolute inset-0 border-4 border-slate-100 rounded-full"></div>
+                    <div className="absolute inset-0 border-4 border-t-green-500 rounded-full animate-spin"></div>
+                </div>
+                <p className="text-slate-400 font-medium animate-pulse">Votre galerie est en cours de chargement...</p>
+            </div>
+        );
+    }
 
     if (!gallery) {
         return (

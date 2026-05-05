@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 // import { useCart } from '@/template/context/CartContext';
 // import { authService } from '../../services/authService'; // Removed for public template
 import { useSiteConfig } from '@/context/SiteConfigContext';
-import logo from '@/template/assets/logo/logo2.svg';
+import logo from '@/template/assets/logo/vanda_logo.png';
 
 
 interface NavbarProps {

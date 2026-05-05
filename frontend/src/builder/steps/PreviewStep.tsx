@@ -1,10 +1,15 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { PreviewSiteWrapper } from '@/components/PreviewSiteWrapper';
-import { Eye, Download, Code, Check, Copy, ExternalLink, RefreshCw, Smartphone, Monitor, Tablet, Save } from 'lucide-react';
+import { Eye, Smartphone, Monitor, Tablet, Save, Loader2, CreditCard, ExternalLink, Check, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { SaveConfigDialog } from '@/builder/SaveConfigDialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { siteConfigService } from '@/services/siteConfigService';
+import { useToast } from '@/components/ui/use-toast';
 import type { SiteConfig } from '@/types/builder';
 
 interface PreviewStepProps {
@@ -14,29 +19,76 @@ interface PreviewStepProps {
 }
 
 export function PreviewStep({ config, onReset, onPrev }: PreviewStepProps) {
-  const [copied, setCopied] = useState(false);
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const [previewDevice, setPreviewDevice] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
-  const [showSaveDialog, setShowSaveDialog] = useState(false);
 
-  const handleCopyCode = () => {
-    const code = generateSiteCode(config);
-    navigator.clipboard.writeText(code);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  // Logique de sauvegarde (intégrée depuis SaveConfigDialog)
+  const [loading, setLoading] = useState(false);
+  const [existingId, setExistingId] = useState<number | null>(null);
+  const [siteName, setSiteName] = useState(config.siteName);
+  const [slug, setSlug] = useState('');
+  const [isPublished, setIsPublished] = useState(false);
+  const [saveStep, setSaveStep] = useState<1 | 2 | 3>(1);
+  const [selectedPlan, setSelectedPlan] = useState('starter');
+
+  useEffect(() => {
+    checkExistingConfig();
+    const storedPlan = localStorage.getItem('selectedPlan');
+    if (storedPlan) setSelectedPlan(storedPlan);
+  }, []);
+
+  const checkExistingConfig = async () => {
+    try {
+      const configs = await siteConfigService.getMyConfigs();
+      if (configs && configs.length > 0) {
+        const existing = configs[0];
+        setExistingId(existing.id);
+        setSiteName(existing.site_name);
+        setSlug(existing.slug);
+        setIsPublished(existing.is_published);
+      }
+    } catch {
+      // pas de config existante
+    }
   };
 
-  const handleExport = () => {
-    const code = generateSiteCode(config);
-    const blob = new Blob([code], { type: 'text/html' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${config.siteName.replace(/\s+/g, '-').toLowerCase()}.html`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+  const handleNext = () => {
+    if (!siteName) {
+      toast({ title: "Nom du site requis", description: "Veuillez entrer un nom pour votre site.", variant: "destructive" });
+      return;
+    }
+    setSaveStep(2);
   };
+
+  const handleSave = async () => {
+    setLoading(true);
+    try {
+      if (existingId) {
+        await siteConfigService.update(existingId, config);
+        toast({ title: "Site mis à jour !", description: "Vos modifications ont été enregistrées avec succès." });
+        navigate('/admin/dashboard');
+      } else {
+        const finalSlug = slug || siteName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+        await siteConfigService.create(config, siteName, finalSlug);
+        toast({ title: "Site créé !", description: "Votre site a été enregistré avec succès." });
+        setSaveStep(3);
+      }
+    } catch (error: any) {
+      toast({ title: "Erreur", description: error.response?.data?.message || "Une erreur est survenue.", variant: "destructive" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getPlanInfo = () => {
+    switch (selectedPlan) {
+      case 'pro': return { name: 'PRO', price: '15 000 FCFA', link: 'https://avkshop.mychariow.shop/vanda-pro/checkout' };
+      case 'studio': return { name: 'STUDIO', price: '45 000 FCFA', link: 'https://avkshop.mychariow.shop/vanda-studio/checkout' };
+      default: return { name: 'STARTER', price: '5 000 FCFA', link: 'https://avkshop.mychariow.shop/vanda-starter/checkout' };
+    }
+  };
+  const planInfo = getPlanInfo();
 
   const getPreviewWidth = () => {
     switch (previewDevice) {
@@ -46,87 +98,56 @@ export function PreviewStep({ config, onReset, onPrev }: PreviewStepProps) {
     }
   };
 
+  const scrollToRecap = () => {
+    document.getElementById('recap-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
   return (
     <div className="space-y-6">
       <div className="text-center mb-8">
         <h2 className="text-2xl font-bold text-gray-900">Votre site est prêt !</h2>
-        <p className="text-gray-600">Visualisez, exportez et partagez votre site</p>
+        <p className="text-gray-600">Visualisez et sauvegardez votre site</p>
       </div>
 
-      {/* Actions */}
-      <div className="flex flex-wrap justify-center gap-3">
-        <Button onClick={() => setShowSaveDialog(true)} className="bg-primary hover:bg-primary/90 gap-2">
+      {/* Bouton Sauvegarder raccourci — scroll vers le bas */}
+      <div className="flex justify-center">
+        <Button onClick={scrollToRecap} className="bg-primary hover:bg-primary/90 gap-2">
           <Save className="w-4 h-4" />
           Sauvegarder
-        </Button>
-
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button variant="outline" className="gap-2">
-              <Code className="w-4 h-4" />
-              Voir le code
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-4xl max-h-[80vh]">
-            <DialogHeader>
-              <DialogTitle>Code source de votre site</DialogTitle>
-            </DialogHeader>
-            <div className="relative">
-              <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-auto max-h-[60vh] text-sm">
-                <code>{generateSiteCode(config)}</code>
-              </pre>
-              <Button
-                size="sm"
-                onClick={handleCopyCode}
-                className="absolute top-2 right-2 gap-2"
-              >
-                {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                {copied ? 'Copié !' : 'Copier'}
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
-
-        <Button onClick={handleExport} className="bg-green-500 hover:bg-green-600 text-black gap-2">
-          <Download className="w-4 h-4" />
-          Télécharger le site
-        </Button>
-
-        <Button variant="outline" onClick={onReset} className="gap-2 text-red-500 hover:text-red-600">
-          <RefreshCw className="w-4 h-4" />
-          Recommencer
         </Button>
       </div>
 
       {/* Aperçu */}
       <Card className="p-4">
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
           <div className="flex items-center gap-2">
             <Eye className="w-5 h-5 text-green-500" />
-            <h3 className="font-semibold">Aperçu en direct</h3>
+            <h3 className="font-semibold text-gray-900">Aperçu en direct</h3>
           </div>
-          <div className="flex gap-1 bg-gray-100 rounded-lg p-1">
+          <div className="flex items-center gap-1 bg-gray-100 rounded-xl p-1.5 w-full sm:w-auto justify-center">
             <button
               onClick={() => setPreviewDevice('desktop')}
-              className={`p-2 rounded ${previewDevice === 'desktop' ? 'bg-white shadow-sm' : ''}`}
+              className={`p-2 sm:p-2.5 rounded-lg transition-all ${previewDevice === 'desktop' ? 'bg-white shadow-sm text-green-600' : 'text-gray-500 hover:text-gray-700'}`}
+              title="Ordinateur"
             >
-              <Monitor className="w-4 h-4" />
+              <Monitor className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
             <button
               onClick={() => setPreviewDevice('tablet')}
-              className={`p-2 rounded ${previewDevice === 'tablet' ? 'bg-white shadow-sm' : ''}`}
+              className={`p-2 sm:p-2.5 rounded-lg transition-all ${previewDevice === 'tablet' ? 'bg-white shadow-sm text-green-600' : 'text-gray-500 hover:text-gray-700'}`}
+              title="Tablette"
             >
-              <Tablet className="w-4 h-4" />
+              <Tablet className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
             <button
               onClick={() => setPreviewDevice('mobile')}
-              className={`p-2 rounded ${previewDevice === 'mobile' ? 'bg-white shadow-sm' : ''}`}
+              className={`p-2 sm:p-2.5 rounded-lg transition-all ${previewDevice === 'mobile' ? 'bg-white shadow-sm text-green-600' : 'text-gray-500 hover:text-gray-700'}`}
+              title="Mobile"
             >
-              <Smartphone className="w-4 h-4" />
+              <Smartphone className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
           </div>
         </div>
-
         <div className="flex justify-center">
           <div
             className="border rounded-lg overflow-hidden transition-all duration-300"
@@ -137,47 +158,205 @@ export function PreviewStep({ config, onReset, onPrev }: PreviewStepProps) {
         </div>
       </Card>
 
-      {/* Récapitulatif */}
-      <Card className="p-6">
-        <h3 className="font-semibold mb-4">Récapitulatif de votre site</h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="text-center p-4 bg-gray-50 rounded-lg">
-            <p className="text-2xl font-bold text-green-500">{config.photos.length}</p>
-            <p className="text-sm text-gray-600">Photos</p>
+      {/* Récapitulatif + Formulaire de sauvegarde */}
+      <Card id="recap-section" className="p-6">
+        {saveStep === 3 ? (
+          // ÉTAPE 3 : CONFIRMATION
+          <div className="py-8 text-center space-y-4">
+            <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
+              <Check className="w-8 h-8 text-green-600" />
+            </div>
+            <h3 className="text-xl font-bold text-gray-900">Paiement enregistré !</h3>
+            <p className="text-gray-500 max-w-sm mx-auto">
+              Votre site sera accessible dans quelques minutes. Nous vérifions actuellement votre transaction avant l'activation finale.
+            </p>
+            <div className="bg-blue-50 text-blue-800 p-3 rounded-lg text-sm mt-4">
+              Un message de confirmation vous sera envoyé dès que votre site sera en ligne.
+            </div>
+            <Button
+              className="w-full bg-green-600 hover:bg-green-700 mt-4"
+              onClick={() => navigate('/admin/dashboard')}
+            >
+              Compris, aller au tableau de bord
+            </Button>
           </div>
-          <div className="text-center p-4 bg-gray-50 rounded-lg">
-            <p className="text-2xl font-bold text-green-500">{config.services.length}</p>
-            <p className="text-sm text-gray-600">Services</p>
+        ) : !existingId && saveStep === 2 ? (
+          // ÉTAPE 2 : PAIEMENT
+          <div className="space-y-6">
+            <h3 className="font-semibold text-lg">Finaliser votre commande</h3>
+
+            <div className="bg-muted/50 p-4 rounded-lg flex justify-between items-center border border-border">
+              <div>
+                <p className="text-sm text-muted-foreground">Plan sélectionné</p>
+                <p className="font-bold text-lg text-primary">{planInfo.name}</p>
+              </div>
+              <div className="text-right">
+                <p className="text-sm text-muted-foreground">Total à payer</p>
+                <p className="font-bold text-lg">{planInfo.price}</p>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <Label className="text-base font-semibold flex items-center gap-2">
+                <CreditCard className="w-4 h-4" /> Paiement en ligne sécurisé
+              </Label>
+              <Button
+                variant="outline"
+                className="w-full justify-between h-auto py-4 border-primary/20 hover:bg-primary/5 hover:border-primary/50 group"
+                onClick={() => window.open(planInfo.link, '_blank')}
+              >
+                <div className="text-left">
+                  <span className="font-semibold block">Payer via Chariow</span>
+                  <span className="text-xs text-muted-foreground">Carte bancaire, Mobile Money</span>
+                </div>
+                <ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-primary" />
+              </Button>
+            </div>
+
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">Ou hors ligne</span>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <Label className="text-base font-semibold flex items-center gap-2">
+                <Smartphone className="w-4 h-4" /> Transfert Direct
+              </Label>
+              <Alert>
+                <AlertTitle className="mb-2">Envoyez {planInfo.price} aux numéros suivants :</AlertTitle>
+                <AlertDescription className="space-y-1">
+                  <div className="flex justify-between items-center">
+                    <span className="font-medium text-orange-500">Orange Money</span>
+                    <code className="bg-muted px-2 py-1 rounded">686 265 447</code>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="font-medium text-green-500">MTN Mobile Money</span>
+                    <code className="bg-muted px-2 py-1 rounded">654 725 521</code>
+                  </div>
+                </AlertDescription>
+              </Alert>
+            </div>
+
+            <div className="flex gap-3 pt-2">
+              <Button variant="ghost" onClick={() => setSaveStep(1)} disabled={loading}>
+                Retour
+              </Button>
+              <Button onClick={handleSave} disabled={loading} className="flex-1 bg-primary hover:bg-primary/90">
+                {loading
+                  ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Validation...</>
+                  : <><Check className="mr-2 h-4 w-4" />J'ai effectué le paiement</>
+                }
+              </Button>
+            </div>
           </div>
-          <div className="text-center p-4 bg-gray-50 rounded-lg">
-            <p className="text-2xl font-bold text-green-500">{config.pricingPlans.length}</p>
-            <p className="text-sm text-gray-600">Forfaits</p>
-          </div>
-          <div className="text-center p-4 bg-gray-50 rounded-lg">
-            <p className="text-2xl font-bold text-green-500">{config.testimonials.length}</p>
-            <p className="text-sm text-gray-600">Témoignages</p>
-          </div>
-        </div>
+        ) : (
+          // ÉTAPE 1 : RÉCAPITULATIF + CONFIG
+          <>
+            <h3 className="font-semibold mb-4">
+              {existingId ? "Mettre à jour le site" : "Récapitulatif de votre site"}
+            </h3>
+
+            {/* Stats */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+              <div className="text-center p-4 bg-gray-50 rounded-lg">
+                <p className="text-2xl font-bold text-green-500">{config.photos.length}</p>
+                <p className="text-sm text-gray-600">Photos</p>
+              </div>
+              <div className="text-center p-4 bg-gray-50 rounded-lg">
+                <p className="text-2xl font-bold text-green-500">{config.services.length}</p>
+                <p className="text-sm text-gray-600">Services</p>
+              </div>
+              <div className="text-center p-4 bg-gray-50 rounded-lg">
+                <p className="text-2xl font-bold text-green-500">{config.pricingPlans.length}</p>
+                <p className="text-sm text-gray-600">Forfaits</p>
+              </div>
+              <div className="text-center p-4 bg-gray-50 rounded-lg">
+                <p className="text-2xl font-bold text-green-500">{config.testimonials.length}</p>
+                <p className="text-sm text-gray-600">Témoignages</p>
+              </div>
+            </div>
+
+            {/* Formulaire de config */}
+            <div className="border-t pt-5 space-y-4">
+              <div className="grid gap-2">
+                <Label htmlFor="site-name">Nom du site</Label>
+                <Input
+                  id="site-name"
+                  value={siteName}
+                  onChange={(e) => setSiteName(e.target.value)}
+                  placeholder="Mon Super Studio"
+                  disabled={!!existingId}
+                />
+              </div>
+
+              <div className="grid gap-2">
+                <Label htmlFor="slug">URL personnalisée (optionnel)</Label>
+                <div className="flex items-center gap-1">
+                  <span className="text-sm text-gray-500 whitespace-nowrap">/sites/</span>
+                  <Input
+                    id="slug"
+                    value={slug}
+                    onChange={(e) => setSlug(e.target.value)}
+                    placeholder="mon-studio"
+                    disabled={!!existingId}
+                  />
+                </div>
+                <p className="text-xs text-gray-500">Laissez vide pour générer automatiquement.</p>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="publish-mode"
+                  checked={isPublished}
+                  onCheckedChange={setIsPublished}
+                  disabled={!!existingId}
+                />
+                <Label htmlFor="publish-mode">Publier immédiatement</Label>
+              </div>
+            </div>
+          </>
+        )}
       </Card>
 
-      <div className="flex justify-between">
-        <Button variant="outline" onClick={onPrev}>
-          Retour
-        </Button>
-        <Button
-          onClick={handleExport}
-          className="bg-green-500 hover:bg-green-600 text-white gap-2"
-        >
-          <ExternalLink className="w-4 h-4" />
-          Exporter mon site
-        </Button>
-      </div>
-
-      <SaveConfigDialog
-        open={showSaveDialog}
-        onOpenChange={setShowSaveDialog}
-        config={config}
-      />
+      {/* Barre de navigation */}
+      {saveStep !== 3 && (
+        <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 pt-6 border-t border-gray-100">
+          <Button 
+            variant="outline" 
+            onClick={onPrev}
+            className="w-full sm:w-auto h-11 sm:h-10 order-2 sm:order-1"
+          >
+            Retour
+          </Button>
+          {saveStep === 1 && (
+            <div className="flex flex-col sm:flex-row gap-3 order-1 sm:order-2">
+              {existingId ? (
+                <Button 
+                  onClick={handleSave} 
+                  disabled={loading} 
+                  className="bg-primary hover:bg-primary/90 gap-2 h-11 sm:h-10 w-full sm:w-auto font-bold"
+                >
+                  {loading
+                    ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Mise à jour...</>
+                    : <><Save className="w-4 h-4" />Mettre à jour</>
+                  }
+                </Button>
+              ) : (
+                <Button 
+                  onClick={handleNext} 
+                  className="bg-primary hover:bg-primary/90 gap-2 h-11 sm:h-10 w-full sm:w-auto font-bold"
+                >
+                  Suivant <ArrowRight className="w-4 h-4" />
+                </Button>
+              )}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -259,187 +438,12 @@ function generateSiteCode(config: SiteConfig): string {
         <div class="max-w-6xl mx-auto">
             <h2 class="text-3xl font-bold text-center mb-4">Portfolio</h2>
             <p class="text-gray-600 text-center mb-8">Découvrez mes dernières réalisations</p>
-            
-            <div class="flex flex-wrap justify-center gap-2 mb-8">
-                <button class="px-4 py-2 rounded-full text-sm bg-primary text-white">Tous</button>
-                ${categories.map(cat => `
-                <button class="px-4 py-2 rounded-full text-sm bg-gray-100 hover:bg-gray-200 transition">${cat}</button>
-                `).join('')}
-            </div>
-            
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 ${config.photos.map(photo => `
                 <div class="aspect-square group relative overflow-hidden rounded-lg">
                     <img src="${photo.url}" alt="${photo.category}" class="w-full h-full object-cover transition group-hover:scale-105">
-                    <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition flex items-end p-4">
-                        <div>
-                            <p class="text-white font-medium">${photo.category}</p>
-                        </div>
-                    </div>
                 </div>
                 `).join('')}
-            </div>
-        </div>
-    </section>
-    ` : ''}
-
-    ${config.enabledSections.services && config.services.length > 0 ? `
-    <!-- Services Section -->
-    <section id="services" class="py-16 px-6 bg-secondary">
-        <div class="max-w-6xl mx-auto">
-            <h2 class="text-3xl font-bold text-center mb-4">Nos Services</h2>
-            <p class="text-gray-600 text-center mb-12">Des prestations adaptées à vos besoins</p>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                ${config.services.map(service => `
-                <div class="p-8 bg-white rounded-xl shadow-sm hover:shadow-md transition">
-                    <h3 class="font-bold text-xl mb-3">${service.title}</h3>
-                    <p class="text-gray-600 mb-4">${service.description}</p>
-                    <ul class="space-y-2">
-                        ${service.features.map(feature => `
-                        <li class="flex items-center gap-2 text-sm text-gray-500">
-                            <span class="w-2 h-2 rounded-full bg-accent"></span>
-                            ${feature}
-                        </li>
-                        `).join('')}
-                    </ul>
-                </div>
-                `).join('')}
-            </div>
-        </div>
-    </section>
-    ` : ''}
-
-    ${config.enabledSections.pricing && config.pricingPlans.length > 0 ? `
-    <!-- Pricing Section -->
-    <section id="tarifs" class="py-16 px-6">
-        <div class="max-w-6xl mx-auto">
-            <h2 class="text-3xl font-bold text-center mb-4">Nos Tarifs</h2>
-            <p class="text-gray-600 text-center mb-12">Des forfaits transparents pour tous les budgets</p>
-            
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                ${config.pricingPlans.map(plan => `
-                <div class="p-8 rounded-xl border-2 ${plan.recommended ? 'border-accent relative' : 'border-gray-200'}">
-                    ${plan.recommended ? '<span class="absolute -top-3 left-1/2 -translate-x-1/2 bg-accent text-primary text-xs font-bold px-3 py-1 rounded-full">RECOMMANDÉ</span>' : ''}
-                    <h3 class="font-bold text-xl">${plan.name}</h3>
-                    <p class="text-4xl font-bold my-4">${plan.price}</p>
-                    <p class="text-gray-600 text-sm mb-6">${plan.description}</p>
-                    <ul class="space-y-3 mb-8">
-                        ${plan.features.map(feature => `
-                        <li class="flex items-center gap-2 text-sm">
-                            <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                            ${feature}
-                        </li>
-                        `).join('')}
-                    </ul>
-                    <button class="w-full py-3 rounded-lg font-medium border-2 border-primary hover:bg-primary hover:text-white transition">
-                        ${plan.recommended ? 'Choisir ce forfait' : 'Réserver'}
-                    </button>
-                </div>
-                `).join('')}
-            </div>
-        </div>
-    </section>
-    ` : ''}
-
-    ${config.enabledSections.testimonials && config.testimonials.length > 0 ? `
-    <!-- Testimonials Section -->
-    <section class="py-16 px-6 bg-secondary">
-        <div class="max-w-6xl mx-auto">
-            <h2 class="text-3xl font-bold text-center mb-4">Témoignages</h2>
-            <p class="text-gray-600 text-center mb-12">Ce que disent nos clients</p>
-            
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                ${config.testimonials.map(testimonial => `
-                <div class="p-6 bg-white rounded-xl">
-                    <div class="flex gap-1 mb-4">
-                        ${[...Array(testimonial.rating)].map(() => '<span class="text-green-400">★</span>').join('')}
-                    </div>
-                    <p class="text-gray-700 italic mb-6">"${testimonial.content}"</p>
-                    <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center font-bold text-lg">
-                            ${testimonial.name.charAt(0)}
-                        </div>
-                        <div>
-                            <p class="font-semibold">${testimonial.name}</p>
-                            <p class="text-sm text-gray-500">${testimonial.role}</p>
-                        </div>
-                    </div>
-                </div>
-                `).join('')}
-            </div>
-        </div>
-    </section>
-    ` : ''}
-
-    ${config.enabledSections.contact ? `
-    <!-- Contact Section -->
-    <section id="contact" class="py-16 px-6">
-        <div class="max-w-6xl mx-auto">
-            <h2 class="text-3xl font-bold text-center mb-4">Contact</h2>
-            <p class="text-gray-600 text-center mb-12">Prêt à immortaliser vos moments ? Contactez-moi !</p>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
-                <div>
-                    <h3 class="font-bold text-xl mb-6">Informations</h3>
-                    <div class="space-y-4">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full bg-accent flex items-center justify-center">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                                </svg>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-500">Email</p>
-                                <p class="font-medium">${config.email}</p>
-                            </div>
-                        </div>
-                        ${config.phone ? `
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full bg-accent flex items-center justify-center">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
-                                </svg>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-500">Téléphone</p>
-                                <p class="font-medium">${config.phone}</p>
-                            </div>
-                        </div>
-                        ` : ''}
-                        ${config.address ? `
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full bg-accent flex items-center justify-center">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                </svg>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-500">Adresse</p>
-                                <p class="font-medium">${[config.address, config.city, config.country].filter(Boolean).join(', ')}</p>
-                            </div>
-                        </div>
-                        ` : ''}
-                    </div>
-                </div>
-                
-                <div>
-                    <h3 class="font-bold text-xl mb-6">Envoyez un message</h3>
-                    <form class="space-y-4">
-                        <div class="grid grid-cols-2 gap-4">
-                            <input type="text" placeholder="Nom" class="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent">
-                            <input type="email" placeholder="Email" class="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent">
-                        </div>
-                        <input type="text" placeholder="Sujet" class="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent">
-                        <textarea placeholder="Votre message" rows="4" class="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"></textarea>
-                        <button type="submit" class="w-full py-3 rounded-lg font-medium bg-primary text-white hover:opacity-90 transition">
-                            Envoyer
-                        </button>
-                    </form>
-                </div>
             </div>
         </div>
     </section>
@@ -450,16 +454,6 @@ function generateSiteCode(config: SiteConfig): string {
         <div class="max-w-6xl mx-auto text-center">
             <p class="font-bold text-2xl mb-2">${config.siteName}</p>
             <p class="text-white/70 mb-6">${config.tagline}</p>
-            <div class="flex justify-center gap-6 text-sm text-white/70 mb-8">
-                <span>${config.email}</span>
-                ${config.phone ? `<span>•</span><span>${config.phone}</span>` : ''}
-            </div>
-            ${Object.values(config.socials).some(v => v) ? `
-            <div class="flex justify-center gap-4 mb-8">
-                ${config.socials.instagram ? `<a href="https://instagram.com/${config.socials.instagram.replace('@', '')}" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition">IG</a>` : ''}
-                ${config.socials.facebook ? `<a href="https://facebook.com/${config.socials.facebook}" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition">FB</a>` : ''}
-            </div>
-            ` : ''}
             <p class="text-white/50 text-sm">© 2024 ${config.siteName}. Tous droits réservés.</p>
         </div>
     </footer>

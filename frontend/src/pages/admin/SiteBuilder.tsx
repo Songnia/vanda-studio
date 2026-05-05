@@ -16,6 +16,7 @@ const SiteBuilder: React.FC = () => {
     const {
         config,
         currentStep,
+        hasSiteBuilt,
         updateConfig,
         addPhoto,
         addPhotos,
@@ -33,7 +34,9 @@ const SiteBuilder: React.FC = () => {
         prevStep,
         goToStep,
         resetConfig,
-        isLoading
+        isLoading,
+        isSaving,
+        saveConfig
     } = useBuilder();
 
     if (isLoading) {
@@ -50,14 +53,14 @@ const SiteBuilder: React.FC = () => {
     const renderStep = () => {
         switch (currentStep) {
             case 0: return <WelcomeStep onNext={nextStep} />;
-            case 1: return <InfoStep config={config} onUpdate={updateConfig} onNext={nextStep} onPrev={prevStep} />;
-            case 2: return <BrandingStep config={config} onUpdate={updateConfig} onNext={nextStep} onPrev={prevStep} />;
-            case 3: return <HeroStep config={config} onUpdate={updateConfig} onNext={nextStep} onPrev={prevStep} />;
-            case 4: return <PortfolioStep config={config} onAddPhoto={addPhoto} onAddPhotos={addPhotos} onRemovePhoto={removePhoto} onNext={nextStep} onPrev={prevStep} />;
-            case 5: return <ServicesStep config={config} onAddService={addService} onRemoveService={removeService} onUpdateService={updateService} onNext={nextStep} onPrev={prevStep} />;
-            case 6: return <PricingStep config={config} onAddPlan={addPricingPlan} onRemovePlan={removePricingPlan} onUpdatePlan={updatePricingPlan} onNext={nextStep} onPrev={prevStep} />;
-            case 7: return <TestimonialsStep config={config} onAddTestimonial={addTestimonial} onRemoveTestimonial={removeTestimonial} onUpdateTestimonial={updateTestimonial} onNext={nextStep} onPrev={prevStep} />;
-            case 8: return <ContactStep config={config} onUpdate={updateConfig} onNext={nextStep} onPrev={prevStep} />;
+            case 1: return <InfoStep config={config} onUpdate={updateConfig} onNext={nextStep} onPrev={prevStep} onSave={saveConfig} isSaving={isSaving} />;
+            case 2: return <BrandingStep config={config} onUpdate={updateConfig} onNext={nextStep} onPrev={prevStep} onSave={saveConfig} isSaving={isSaving} />;
+            case 3: return <HeroStep config={config} onUpdate={updateConfig} onNext={nextStep} onPrev={prevStep} onSave={saveConfig} isSaving={isSaving} />;
+            case 4: return <PortfolioStep config={config} onAddPhoto={addPhoto} onAddPhotos={addPhotos} onRemovePhoto={removePhoto} onNext={nextStep} onPrev={prevStep} onSave={saveConfig} isSaving={isSaving} />;
+            case 5: return <ServicesStep config={config} onAddService={addService} onRemoveService={removeService} onUpdateService={updateService} onNext={nextStep} onPrev={prevStep} onSave={saveConfig} isSaving={isSaving} />;
+            case 6: return <PricingStep config={config} onAddPlan={addPricingPlan} onRemovePlan={removePricingPlan} onUpdatePlan={updatePricingPlan} onNext={nextStep} onPrev={prevStep} onSave={saveConfig} isSaving={isSaving} />;
+            case 7: return <TestimonialsStep config={config} onAddTestimonial={addTestimonial} onRemoveTestimonial={removeTestimonial} onUpdateTestimonial={updateTestimonial} onNext={nextStep} onPrev={prevStep} onSave={saveConfig} isSaving={isSaving} />;
+            case 8: return <ContactStep config={config} onUpdate={updateConfig} onNext={nextStep} onPrev={prevStep} onSave={saveConfig} isSaving={isSaving} />;
             case 9: return <PreviewStep config={config} onReset={resetConfig} onPrev={prevStep} />;
             default: return <WelcomeStep onNext={nextStep} />;
         }
@@ -70,6 +73,7 @@ const SiteBuilder: React.FC = () => {
             onNext={nextStep}
             onPrev={prevStep}
             embedded={true}
+            hasSiteBuilt={hasSiteBuilt}
         >
             {renderStep()}
         </BuilderLayout>

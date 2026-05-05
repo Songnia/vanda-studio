@@ -116,10 +116,10 @@ export const defaultSiteConfig: SiteConfig = {
   textColor: "#1a1a1a",
 
   email: "contact@monstudio.com",
-  phone: "+33 6 00 00 00 00",
-  address: "123 Rue de la Photo",
-  city: "Paris",
-  country: "France",
+  phone: "+237 6 00 00 00 00",
+  address: "Rue de la Joie",
+  city: "Douala",
+  country: "Cameroun",
 
   promoterBiography: "",
   promoterPhilosophy: "",
@@ -165,14 +165,14 @@ export const defaultSiteConfig: SiteConfig = {
     {
       id: "1",
       name: "Forfait Découverte",
-      price: "150€",
+      price: "50 000 FCFA",
       description: "Idéal pour une première expérience ou des besoins simples.",
       features: ["1 Heure de shooting", "1 Tenue", "5 Photos retouchées HD", "Galerie privée en ligne"]
     },
     {
       id: "2",
       name: "Forfait Premium",
-      price: "300€",
+      price: "100 000 FCFA",
       description: "Notre best-seller pour des souvenirs inoubliables.",
       features: ["2 Heures de shooting", "3 Tenues", "15 Photos retouchées HD", "Maquillage inclus", "Galerie privée en ligne"],
       recommended: true
@@ -180,7 +180,7 @@ export const defaultSiteConfig: SiteConfig = {
     {
       id: "3",
       name: "Forfait Ultimate",
-      price: "750€",
+      price: "250 000 FCFA",
       description: "L'expérience complète pour les professionnels et les grands événements.",
       features: ["Demi-journée de shooting", "Tenues illimitées", "30 Photos retouchées HD", "Tous les fichiers sources", "Maquillage & Coiffure inclus"]
     }

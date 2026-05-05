@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import vandaLogo from '@/template/assets/logo/vanda_logo.png';
 import {
     Box,
     Container,
@@ -20,8 +21,8 @@ import {
 } from '@mui/icons-material';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { authService } from '../services/authService';
-import PublicNavbar from '../components/Layout/PublicNavbar';
-import PublicFooter from '../components/Layout/PublicFooter';
+{/*import PublicNavbar from '../components/Layout/PublicNavbar';
+import PublicFooter from '../components/Layout/PublicFooter';*/}
 
 const Login: React.FC = () => {
     const navigate = useNavigate();
@@ -56,7 +57,7 @@ const Login: React.FC = () => {
 
     return (
         <div className="min-h-screen bg-background text-foreground linear-theme font-sans flex flex-col">
-            <PublicNavbar />
+            {/*<PublicNavbar />*/}
             <div className="flex-grow flex items-center justify-center py-20">
                 <Container maxWidth="sm">
                     <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -71,6 +72,18 @@ const Login: React.FC = () => {
                                 color: 'white'
                             }}
                         >
+                            {/* Logo */}
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginBottom: '16px' }}>
+                                <img src={vandaLogo} alt="Vanda Studio" style={{ height: '45px', objectFit: 'contain' }} />
+                                <span style={{
+                                    fontSize: '1.2rem',
+                                    fontWeight: 800,
+                                    background: 'linear-gradient(135deg, #4caf50 0%, #81c784 100%)',
+                                    WebkitBackgroundClip: 'text',
+                                    WebkitTextFillColor: 'transparent',
+                                    letterSpacing: '-0.5px'
+                                }}>VANDA STUDIO</span>
+                            </div>
                             <Typography variant="h4" component="h1" gutterBottom align="center" sx={{ fontWeight: 700, color: 'white' }}>
                                 Connexion
                             </Typography>
@@ -154,6 +167,7 @@ const Login: React.FC = () => {
                                     variant="contained"
                                     size="large"
                                     disabled={loading}
+                                    startIcon={loading ? <CircularProgress size={20} color="inherit" /> : null}
                                     sx={{
                                         mt: 4,
                                         mb: 2,
@@ -161,10 +175,14 @@ const Login: React.FC = () => {
                                         borderRadius: 2,
                                         fontWeight: 600,
                                         bgcolor: '#4caf50',
-                                        '&:hover': { bgcolor: '#43a047' }
+                                        '&:hover': { bgcolor: '#43a047' },
+                                        '&.Mui-disabled': {
+                                            bgcolor: 'rgba(76, 175, 80, 0.5)',
+                                            color: 'rgba(255, 255, 255, 0.7)'
+                                        }
                                     }}
                                 >
-                                    {loading ? <CircularProgress size={24} color="inherit" /> : 'Se connecter'}
+                                    {loading ? 'Traitement en cours...' : 'Se connecter'}
                                 </Button>
 
                                 <Box sx={{ mt: 2, textAlign: 'center' }}>
@@ -180,7 +198,7 @@ const Login: React.FC = () => {
                     </Box>
                 </Container>
             </div>
-            <PublicFooter />
+            {/*<PublicFooter />*/}
         </div>
     );
 };

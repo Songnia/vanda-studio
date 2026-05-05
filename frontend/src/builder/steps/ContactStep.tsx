@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
+import { SaveButton } from '@/builder/components/SaveButton';
 import type { SiteConfig } from '@/types/builder';
 
 interface ContactStepProps {
@@ -11,9 +12,12 @@ interface ContactStepProps {
   onUpdate: (updates: Partial<SiteConfig>) => void;
   onNext: () => void;
   onPrev: () => void;
+  onSave: (updates?: Partial<SiteConfig>) => Promise<boolean>;
+  isSaving: boolean;
 }
 
-export function ContactStep({ config, onUpdate, onNext, onPrev }: ContactStepProps) {
+export function ContactStep({ config, onUpdate, onNext, onPrev, onSave, isSaving }: ContactStepProps) {
+  const [isDirty, setIsDirty] = useState(false);
   const [formData, setFormData] = useState({
     email: config.email,
     phone: config.phone,
@@ -26,6 +30,7 @@ export function ContactStep({ config, onUpdate, onNext, onPrev }: ContactStepPro
 
   const handleChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+    setIsDirty(true);
   };
 
   const handleSocialChange = (platform: string, value: string) => {
@@ -36,11 +41,22 @@ export function ContactStep({ config, onUpdate, onNext, onPrev }: ContactStepPro
         [platform]: value
       }
     }));
+    setIsDirty(true);
   };
 
   const handleSubmit = () => {
     onUpdate(formData);
     onNext();
+  };
+
+  const handleSave = async () => {
+    onUpdate(formData);
+    if (typeof onSave === 'function') {
+      const ok = await onSave(formData);
+      if (ok) setIsDirty(false);
+      return ok;
+    }
+    return false;
   };
 
   const socialInputs = [
@@ -90,7 +106,7 @@ export function ContactStep({ config, onUpdate, onNext, onPrev }: ContactStepPro
                 id="phone"
                 value={formData.phone}
                 onChange={(e) => handleChange('phone', e.target.value)}
-                placeholder="+33 6 00 00 00 00"
+                placeholder="+237 6 00 00 00 00"
               />
             </div>
 
@@ -103,7 +119,7 @@ export function ContactStep({ config, onUpdate, onNext, onPrev }: ContactStepPro
                 id="address"
                 value={formData.address}
                 onChange={(e) => handleChange('address', e.target.value)}
-                placeholder="123 Rue de la Photo"
+                placeholder="Ex: Rue de la Joie"
               />
             </div>
 
@@ -114,7 +130,7 @@ export function ContactStep({ config, onUpdate, onNext, onPrev }: ContactStepPro
                   id="city"
                   value={formData.city}
                   onChange={(e) => handleChange('city', e.target.value)}
-                  placeholder="Paris"
+                  placeholder="Douala"
                 />
               </div>
               <div className="space-y-2">
@@ -123,7 +139,7 @@ export function ContactStep({ config, onUpdate, onNext, onPrev }: ContactStepPro
                   id="country"
                   value={formData.country}
                   onChange={(e) => handleChange('country', e.target.value)}
-                  placeholder="France"
+                  placeholder="Cameroun"
                 />
               </div>
             </div>
@@ -234,17 +250,24 @@ export function ContactStep({ config, onUpdate, onNext, onPrev }: ContactStepPro
         </div>
       </Card>
 
-      <div className="flex justify-between">
-        <Button variant="outline" onClick={onPrev}>
+      <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 pt-6 border-t border-gray-100">
+        <Button 
+          variant="outline" 
+          onClick={onPrev}
+          className="w-full sm:w-auto h-11 sm:h-10 order-2 sm:order-1"
+        >
           Retour
         </Button>
-        <Button
-          onClick={handleSubmit}
-          disabled={!formData.email}
-          className="bg-green-500 hover:bg-green-600 text-black"
-        >
-          Continuer
-        </Button>
+        <div className="flex flex-col sm:flex-row gap-3 order-1 sm:order-2">
+          <SaveButton onSave={handleSave} isSaving={isSaving} isDirty={isDirty} className="w-full sm:w-auto h-11 sm:h-10" />
+          <Button
+            onClick={handleSubmit}
+            disabled={!formData.email}
+            className="bg-green-500 hover:bg-green-600 text-black h-11 sm:h-10 w-full sm:w-auto font-bold"
+          >
+            Continuer
+          </Button>
+        </div>
       </div>
     </div>
   );

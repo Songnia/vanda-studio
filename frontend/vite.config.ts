@@ -2,6 +2,7 @@ import path from "path"
 import react from "@vitejs/plugin-react"
 import { defineConfig } from "vite"
 import { inspectAttr } from 'kimi-plugin-inspect-react'
+import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
@@ -9,7 +10,37 @@ export default defineConfig(({ mode }) => {
 
   return {
     base: '/',
-    plugins: [inspectAttr(), react()],
+    plugins: [
+      inspectAttr(), 
+      react(),
+      VitePWA({
+        registerType: 'autoUpdate',
+        devOptions: {
+          enabled: true
+        },
+        manifest: {
+          name: 'VANDA STUDIO Admin',
+          short_name: 'VANDA STUDIO',
+          description: 'Administration Panel for Vanda Studio',
+          theme_color: '#4caf50',
+          background_color: '#ffffff',
+          display: 'standalone',
+          icons: [
+            {
+              src: 'pwa-192x192.png',
+              sizes: '192x192',
+              type: 'image/png'
+            },
+            {
+              src: 'pwa-512x512.png',
+              sizes: '512x512',
+              type: 'image/png',
+              purpose: 'any maskable'
+            }
+          ]
+        }
+      })
+    ],
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src"),

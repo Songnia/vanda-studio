@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, X, Euro, Edit2, Check, Star } from 'lucide-react';
+import { Plus, X, Banknote, Edit2, Check, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { SaveButton } from '@/builder/components/SaveButton';
 import type { SiteConfig, PricingPlan } from '@/types/builder';
 
 interface PricingStepProps {
@@ -16,6 +17,8 @@ interface PricingStepProps {
   onUpdatePlan: (id: string, updates: Partial<PricingPlan>) => void;
   onNext: () => void;
   onPrev: () => void;
+  onSave: (updates?: Partial<SiteConfig>) => Promise<boolean>;
+  isSaving: boolean;
 }
 
 export function PricingStep({ 
@@ -24,8 +27,11 @@ export function PricingStep({
   onRemovePlan, 
   onUpdatePlan,
   onNext, 
-  onPrev 
+  onPrev,
+  onSave,
+  isSaving
 }: PricingStepProps) {
+  const [isDirty, setIsDirty] = useState(false);
   const [plans, setPlans] = useState(config.pricingPlans);
   const [editingPlan, setEditingPlan] = useState<string | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -50,17 +56,20 @@ export function PricingStep({
       setPlans(prev => [...prev, { id: Date.now().toString(), ...planData }]);
       setNewPlan({ name: '', price: '', description: '', features: [''], recommended: false });
       setDialogOpen(false);
+      setIsDirty(true);
     }
   };
 
   const handleRemovePlan = (id: string) => {
     onRemovePlan(id);
     setPlans(prev => prev.filter(p => p.id !== id));
+    setIsDirty(true);
   };
 
   const handleUpdatePlan = (id: string, updates: Partial<PricingPlan>) => {
     onUpdatePlan(id, updates);
     setPlans(prev => prev.map(p => p.id === id ? { ...p, ...updates } : p));
+    setIsDirty(true);
   };
 
   const addFeature = () => {
@@ -89,15 +98,15 @@ export function PricingStep({
       </div>
 
       <Card className="p-6">
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
           <div className="flex items-center gap-2">
-            <Euro className="w-5 h-5 text-green-500" />
-            <h3 className="font-semibold">Forfaits ({plans.length})</h3>
+            <Banknote className="w-5 h-5 text-green-500" />
+            <h3 className="font-semibold text-gray-900">Forfaits ({plans.length})</h3>
           </div>
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-green-500 hover:bg-green-600 text-black">
-                <Plus className="w-4 h-4 mr-2" />
+              <Button className="w-full sm:w-auto bg-green-500 hover:bg-green-600 text-black font-semibold text-xs h-8 sm:h-10 px-3">
+                <Plus className="w-3.5 h-3.5 mr-1.5" />
                 Ajouter un forfait
               </Button>
             </DialogTrigger>
@@ -124,7 +133,7 @@ export function PricingStep({
                     id="planPrice"
                     value={newPlan.price}
                     onChange={(e) => setNewPlan(prev => ({ ...prev, price: e.target.value }))}
-                    placeholder="Ex: 300€"
+                    placeholder="Ex: 50 000 FCFA"
                   />
                 </div>
 
@@ -193,7 +202,7 @@ export function PricingStep({
 
         {plans.length === 0 ? (
           <div className="text-center py-12 border-2 border-dashed border-gray-200 rounded-lg">
-            <Euro className="w-16 h-16 mx-auto text-gray-300 mb-4" />
+            <Banknote className="w-16 h-16 mx-auto text-gray-300 mb-4" />
             <p className="text-gray-500 font-medium">Aucun forfait défini</p>
             <p className="text-sm text-gray-400">Ajoutez vos tarifs pour les afficher sur votre site</p>
           </div>
@@ -224,30 +233,33 @@ export function PricingStep({
                   />
                 ) : (
                   <>
-                    <div className="flex justify-between items-start mb-3">
-                      <h4 className="font-bold text-lg">{plan.name}</h4>
-                      <div className="flex gap-1">
-                        <Button 
-                          variant="ghost" 
-                          size="icon"
-                          className="h-8 w-8"
-                          onClick={() => setEditingPlan(plan.id)}
-                        >
-                          <Edit2 className="w-4 h-4" />
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="icon"
-                          className="h-8 w-8 text-red-500"
-                          onClick={() => handleRemovePlan(plan.id)}
-                        >
-                          <X className="w-4 h-4" />
-                        </Button>
+                    <div className="mb-4">
+                      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 mb-3">
+                        <div className="flex justify-end gap-2 order-1 sm:order-2">
+                          <Button 
+                            variant="ghost" 
+                            size="icon"
+                            className="h-8 w-8 sm:h-9 sm:w-9 rounded-full bg-gray-50 hover:bg-green-50 hover:text-green-600 transition-colors"
+                            onClick={() => setEditingPlan(plan.id)}
+                          >
+                            <Edit2 className="w-4 h-4" />
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="icon"
+                            className="h-8 w-8 sm:h-9 sm:w-9 rounded-full bg-gray-50 hover:bg-red-50 hover:text-red-600 transition-colors"
+                            onClick={() => handleRemovePlan(plan.id)}
+                          >
+                            <X className="w-4 h-4" />
+                          </Button>
+                        </div>
+                        <h4 className="font-bold text-lg sm:text-xl text-gray-900 leading-tight order-2 sm:order-1 flex-1">
+                          {plan.name}
+                        </h4>
                       </div>
-                    </div>
-
-                    <div className="mb-3">
-                      <span className="text-3xl font-bold">{plan.price}</span>
+                      <div className="flex items-baseline gap-1">
+                        <span className="text-2xl font-black text-green-600">{plan.price}</span>
+                      </div>
                     </div>
 
                     {plan.description && (
@@ -269,10 +281,10 @@ export function PricingStep({
                       <Button 
                         variant="outline" 
                         size="sm"
-                        className="w-full mt-4"
+                        className="w-full mt-4 text-[11px] h-8 border-dashed hover:border-green-400 hover:text-green-600 font-semibold transition-all relative pl-8"
                         onClick={() => handleUpdatePlan(plan.id, { recommended: true })}
                       >
-                        <Star className="w-3 h-3 mr-1" />
+                        <Star className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2" />
                         Marquer recommandé
                       </Button>
                     )}
@@ -284,16 +296,35 @@ export function PricingStep({
         )}
       </Card>
 
-      <div className="flex justify-between">
-        <Button variant="outline" onClick={onPrev}>
+      <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 pt-6 border-t border-gray-100">
+        <Button 
+          variant="outline" 
+          onClick={onPrev}
+          className="w-full sm:w-auto h-11 sm:h-10 order-2 sm:order-1"
+        >
           Retour
         </Button>
-        <Button 
-          onClick={onNext}
-          className="bg-green-500 hover:bg-green-600 text-black"
-        >
-          Continuer
-        </Button>
+        <div className="flex flex-col sm:flex-row gap-3 order-1 sm:order-2">
+          <SaveButton 
+            onSave={async () => { 
+                if (typeof onSave === 'function') {
+                    const ok = await onSave(); 
+                    if (ok) setIsDirty(false); 
+                    return ok;
+                }
+                return false;
+            }} 
+            isSaving={isSaving} 
+            isDirty={isDirty} 
+            className="w-full sm:w-auto h-11 sm:h-10"
+          />
+          <Button 
+            onClick={onNext}
+            className="bg-green-500 hover:bg-green-600 text-black h-11 sm:h-10 w-full sm:w-auto font-bold"
+          >
+            Continuer
+          </Button>
+        </div>
       </div>
     </div>
   );

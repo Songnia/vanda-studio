@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
+import { SaveButton } from '@/builder/components/SaveButton';
 import type { SiteConfig } from '@/types/builder';
 
 interface HeroStepProps {
@@ -13,9 +14,12 @@ interface HeroStepProps {
   onUpdate: (updates: Partial<SiteConfig>) => void;
   onNext: () => void;
   onPrev: () => void;
+  onSave: (updates?: Partial<SiteConfig>) => Promise<boolean>;
+  isSaving: boolean;
 }
 
-export function HeroStep({ config, onUpdate, onNext, onPrev }: HeroStepProps) {
+export function HeroStep({ config, onUpdate, onNext, onPrev, onSave, isSaving }: HeroStepProps) {
+  const [isDirty, setIsDirty] = useState(false);
   const [heroImages, setHeroImages] = useState<string[]>(config.heroImages);
   const [tagline, setTagline] = useState(config.tagline);
   const [description, setDescription] = useState(config.description);
@@ -31,6 +35,7 @@ export function HeroStep({ config, onUpdate, onNext, onPrev }: HeroStepProps) {
         reader.onload = (event) => {
           if (event.target?.result) {
             setHeroImages(prev => [...prev, event.target!.result as string]);
+            setIsDirty(true);
           }
         };
         reader.readAsDataURL(file);
@@ -55,6 +60,7 @@ export function HeroStep({ config, onUpdate, onNext, onPrev }: HeroStepProps) {
 
   const removeImage = (index: number) => {
     setHeroImages(prev => prev.filter((_, i) => i !== index));
+    setIsDirty(true);
   };
 
   const handleSubmit = () => {
@@ -64,6 +70,17 @@ export function HeroStep({ config, onUpdate, onNext, onPrev }: HeroStepProps) {
       description
     });
     onNext();
+  };
+
+  const handleSave = async () => {
+    const updates = { heroImages, tagline, description };
+    onUpdate(updates);
+    if (typeof onSave === 'function') {
+      const ok = await onSave(updates);
+      if (ok) setIsDirty(false);
+      return ok;
+    }
+    return false;
   };
 
   return (
@@ -84,7 +101,7 @@ export function HeroStep({ config, onUpdate, onNext, onPrev }: HeroStepProps) {
             <Input
               id="tagline"
               value={tagline}
-              onChange={(e) => setTagline(e.target.value)}
+              onChange={(e) => { setTagline(e.target.value); setIsDirty(true); }}
               placeholder="Ex: Capturer vos moments précieux"
             />
           </div>
@@ -95,7 +112,7 @@ export function HeroStep({ config, onUpdate, onNext, onPrev }: HeroStepProps) {
             <Textarea
               id="heroDescription"
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              onChange={(e) => { setDescription(e.target.value); setIsDirty(true); }}
               placeholder="Décrivez votre activité..."
               rows={2}
             />
@@ -237,8 +254,8 @@ export function HeroStep({ config, onUpdate, onNext, onPrev }: HeroStepProps) {
                       className="hidden"
                     />
 
-                    <div className="flex items-start gap-4">
-                      <div className="flex-1">
+                    <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
+                      <div className="w-full flex-1">
                         <Button
                           variant="outline"
                           size="sm"
@@ -251,7 +268,7 @@ export function HeroStep({ config, onUpdate, onNext, onPrev }: HeroStepProps) {
                       </div>
 
                       {config.flashInfo.backgroundImage && (
-                        <div className="relative group w-24 h-12 border border-green-200 rounded overflow-hidden shadow-sm">
+                        <div className="relative group w-24 h-12 border border-green-200 rounded overflow-hidden shadow-sm flex-shrink-0">
                           <img
                             src={config.flashInfo.backgroundImage}
                             alt="Aperçu Bandeau"
@@ -322,16 +339,23 @@ export function HeroStep({ config, onUpdate, onNext, onPrev }: HeroStepProps) {
         </Card>
       )}
 
-      <div className="flex justify-between">
-        <Button variant="outline" onClick={onPrev}>
+      <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 pt-6 border-t border-gray-100">
+        <Button 
+          variant="outline" 
+          onClick={onPrev}
+          className="w-full sm:w-auto h-11 sm:h-10 order-2 sm:order-1"
+        >
           Retour
         </Button>
-        <Button
-          onClick={handleSubmit}
-          className="bg-green-500 hover:bg-green-600 text-black"
-        >
-          Continuer
-        </Button>
+        <div className="flex flex-col sm:flex-row gap-3 order-1 sm:order-2">
+          <SaveButton onSave={handleSave} isSaving={isSaving} isDirty={isDirty} className="w-full sm:w-auto h-11 sm:h-10" />
+          <Button
+            onClick={handleSubmit}
+            className="bg-green-500 hover:bg-green-600 text-black h-11 sm:h-10 w-full sm:w-auto font-bold"
+          >
+            Continuer
+          </Button>
+        </div>
       </div>
     </div>
   );

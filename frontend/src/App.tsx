@@ -10,6 +10,7 @@ import { getSubdomainInfo } from '@/utils/subdomain';
 import AdminDashboard from '@/pages/admin/AdminDashboard';
 import NewDelivery from '@/pages/admin/NewDelivery';
 import GalleryManagement from '@/pages/admin/GalleryManagement';
+import InvoiceBuilder from '@/pages/admin/InvoiceBuilder';
 import Login from '@/pages/Login';
 import SignUp from '@/pages/SignUp';
 import ProtectedRoute from '@/components/Auth/ProtectedRoute';
@@ -78,7 +79,9 @@ function BuilderApp() {
     nextStep,
     prevStep,
     goToStep,
-    resetConfig
+    resetConfig,
+    isSaving,
+    saveConfig
   } = useBuilder();
 
   const renderStep = () => {
@@ -93,6 +96,8 @@ function BuilderApp() {
             onUpdate={updateConfig}
             onNext={nextStep}
             onPrev={prevStep}
+            onSave={saveConfig}
+            isSaving={isSaving}
           />
         );
 
@@ -103,6 +108,8 @@ function BuilderApp() {
             onUpdate={updateConfig}
             onNext={nextStep}
             onPrev={prevStep}
+            onSave={saveConfig}
+            isSaving={isSaving}
           />
         );
 
@@ -113,6 +120,8 @@ function BuilderApp() {
             onUpdate={updateConfig}
             onNext={nextStep}
             onPrev={prevStep}
+            onSave={saveConfig}
+            isSaving={isSaving}
           />
         );
 
@@ -125,6 +134,8 @@ function BuilderApp() {
             onRemovePhoto={removePhoto}
             onNext={nextStep}
             onPrev={prevStep}
+            onSave={saveConfig}
+            isSaving={isSaving}
           />
         );
 
@@ -137,6 +148,8 @@ function BuilderApp() {
             onUpdateService={updateService}
             onNext={nextStep}
             onPrev={prevStep}
+            onSave={saveConfig}
+            isSaving={isSaving}
           />
         );
 
@@ -149,6 +162,8 @@ function BuilderApp() {
             onUpdatePlan={updatePricingPlan}
             onNext={nextStep}
             onPrev={prevStep}
+            onSave={saveConfig}
+            isSaving={isSaving}
           />
         );
 
@@ -161,6 +176,8 @@ function BuilderApp() {
             onUpdateTestimonial={updateTestimonial}
             onNext={nextStep}
             onPrev={prevStep}
+            onSave={saveConfig}
+            isSaving={isSaving}
           />
         );
 
@@ -171,6 +188,8 @@ function BuilderApp() {
             onUpdate={updateConfig}
             onNext={nextStep}
             onPrev={prevStep}
+            onSave={saveConfig}
+            isSaving={isSaving}
           />
         );
 
@@ -217,6 +236,9 @@ function App() {
       <BrowserRouter>
         <Routes>
 
+          {/* Root-level gallery for subdomains and shared links */}
+          <Route path="/g/:uuid" element={<ClientGalleryView />} />
+
           {/* =========================================
               SITE PHOTOGRAPHE (sous-domaine wildcard)
               slug.vanda-studio.org → site du photographe
@@ -251,6 +273,7 @@ function App() {
                   <Route path="/admin/dashboard" element={<AdminDashboard />} />
                   <Route path="/admin/new-delivery" element={<NewDelivery />} />
                   <Route path="/admin/gallery/:uuid" element={<GalleryManagement />} />
+                  <Route path="/admin/invoices/new" element={<InvoiceBuilder />} />
                   <Route path="/admin/site-builder" element={<SiteBuilder />} />
                 </Route>
               </Route>
@@ -260,7 +283,8 @@ function App() {
                 <Route path="/builder" element={<BuilderApp />} />
               </Route>
 
-              {/* Galerie client partagée */}
+              {/* Galerie client partagée — formats: /:slug/g/:uuid et /g/:uuid */}
+              <Route path="/:slug/g/:uuid" element={<ClientGalleryView />} />
               <Route path="/g/:uuid" element={<ClientGalleryView />} />
 
               {/* Redirections */}

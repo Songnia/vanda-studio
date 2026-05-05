@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import vandaLogo from '@/template/assets/logo/vanda_logo.png'
 import { motion } from 'framer-motion'
 import {
     Camera,
@@ -42,15 +43,20 @@ function Navigation() {
                 <div className="flex items-center justify-between h-16">
                     {/* Logo */}
                     <a href="/" className="flex items-center gap-2 group">
+                        <img
+                            src={vandaLogo}
+                            alt="Vanda Studio Logo"
+                            style={{ height: '50px', objectFit: 'contain' }}
+                        />
                         <span style={{
-                            fontSize: '1.5rem',
+                            fontSize: '1rem',
                             fontWeight: 800,
                             background: 'linear-gradient(135deg, #4caf50 0%, #81c784 100%)',
                             WebkitBackgroundClip: 'text',
                             WebkitTextFillColor: 'transparent',
                             letterSpacing: '-0.5px'
                         }}>
-                            🞹 VANDA STUDIO
+                            VANDA STUDIO
                         </span>
                     </a>
 
@@ -890,7 +896,21 @@ function Footer() {
                     {/* Logo & Description */}
                     <div className="col-span-2">
                         <a href="/" className="flex items-center gap-2 mb-4">
-                            <span className="font-semibold text-white">🞹 VANDA STUDIO</span>
+                            <img
+                                src={vandaLogo}
+                                alt="Vanda Studio Logo"
+                                style={{ height: '40px', objectFit: 'contain' }}
+                            />
+                            <span style={{
+                                fontSize: '1rem',
+                                fontWeight: 800,
+                                background: 'linear-gradient(135deg, #4caf50 0%, #81c784 100%)',
+                                WebkitBackgroundClip: 'text',
+                                WebkitTextFillColor: 'transparent',
+                                letterSpacing: '-0.3px'
+                            }}>
+                                VANDA STUDIO
+                            </span>
                         </a>
                         <p className="text-gray-400 text-sm mb-4 max-w-xs">
                             La plateforme tout-en-un pour créer votre site de photographe professionnel
