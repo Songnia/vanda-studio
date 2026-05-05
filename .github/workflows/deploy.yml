@@ -37,8 +37,14 @@ jobs:
         run: composer install --no-dev --optimize-autoloader
 
       # --- DEPLOYMENT ---
-      - name: Deploy via Rsync
+      - name: Validate Secrets and Deploy
         run: |
+          if [ -z "${{ secrets.SSH_HOST }}" ]; then echo "❌ SSH_HOST is missing"; exit 1; fi
+          if [ -z "${{ secrets.SSH_USER }}" ]; then echo "❌ SSH_USER is missing"; exit 1; fi
+          if [ -z "${{ secrets.REMOTE_PATH }}" ]; then echo "❌ REMOTE_PATH is missing"; exit 1; fi
+          if [ -z "${{ secrets.SSH_PRIVATE_KEY }}" ]; then echo "❌ SSH_PRIVATE_KEY is missing"; exit 1; fi
+          
+          echo "✅ All secrets detected. Starting deployment..."
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key
           chmod 600 private_key
           rsync -avz -e "ssh -i private_key -p 2222 -o StrictHostKeyChecking=no" \
